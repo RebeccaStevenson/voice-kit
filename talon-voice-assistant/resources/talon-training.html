@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Talon Voice Training</title>
+<style>
+  :root {
+    --bg: #1a1a2e;
+    --surface: #16213e;
+    --surface-2: #0f3460;
+    --accent: #e94560;
+    --success: #4ecca3;
+    --warning: #f0a500;
+    --text: #eee;
+    --text-dim: #8899aa;
+    --radius: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  header {
+    width: 100%;
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  header h1 { font-size: 20px; font-weight: 600; letter-spacing: -0.3px; }
+  header h1 span { color: var(--accent); }
+
+  .header-right { display: flex; align-items: center; gap: 16px; }
+  .score-display { font-size: 14px; color: var(--text-dim); }
+  .score-display strong { color: var(--success); font-size: 16px; }
+  .streak-display { font-size: 13px; color: var(--warning); }
+
+  nav {
+    display: flex; gap: 8px; padding: 24px 32px 0;
+    width: 100%; max-width: 800px; justify-content: center; flex-wrap: wrap;
+  }
+
+  nav button {
+    padding: 10px 20px; border: 1px solid rgba(255,255,255,0.1);
+    background: var(--surface); color: var(--text-dim); border-radius: 999px;
+    cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s;
+  }
+  nav button:hover { border-color: var(--accent); color: var(--text); }
+  nav button.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+  main {
+    flex: 1; width: 100%; max-width: 800px; padding: 32px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+
+  .drill-container {
+    width: 100%; display: flex; flex-direction: column;
+    align-items: center; gap: 32px; margin-top: 24px;
+  }
+
+  .instruction { font-size: 15px; color: var(--text-dim); text-align: center; line-height: 1.5; }
+
+  .prompt-card {
+    background: var(--surface); border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--radius); padding: 48px 64px; text-align: center;
+    width: 100%; max-width: 500px; position: relative;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .prompt-card.correct { border-color: var(--success); box-shadow: 0 0 30px rgba(78,204,163,0.15); }
+  .prompt-card.incorrect { border-color: var(--accent); box-shadow: 0 0 30px rgba(233,69,96,0.15); }
+  .prompt-card.retry { border-color: var(--warning); box-shadow: 0 0 30px rgba(240,165,0,0.15); }
+
+  .prompt-label {
+    font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--text-dim); margin-bottom: 16px;
+  }
+  .prompt-letter { font-size: 96px; font-weight: 700; line-height: 1.1; letter-spacing: -2px; }
+  .prompt-word { font-size: 36px; font-weight: 600; line-height: 1.2; }
+  .prompt-subtext { font-size: 14px; color: var(--text-dim); margin-top: 12px; }
+
+  .hint { font-size: 18px; color: var(--warning); margin-top: 16px; font-weight: 500; min-height: 27px; }
+  .hint.moving-on { color: var(--text-dim); font-size: 15px; font-style: italic; }
+
+  /* Word spelling progress */
+  .word-progress {
+    display: flex; gap: 6px; justify-content: center; margin-top: 16px; flex-wrap: wrap;
+  }
+  .word-char {
+    width: 40px; height: 48px; display: flex; align-items: center; justify-content: center;
+    font-family: "SF Mono", "Fira Code", monospace; font-size: 24px; font-weight: 600;
+    border-radius: 8px; background: var(--surface-2); border: 2px solid rgba(255,255,255,0.08);
+    text-transform: uppercase; transition: all 0.2s;
+  }
+  .word-char.done { border-color: var(--success); color: var(--success); background: rgba(78,204,163,0.1); }
+  .word-char.active { border-color: var(--accent); color: var(--accent); }
+  .word-char.wrong { border-color: var(--accent); color: var(--accent); background: rgba(233,69,96,0.1); }
+
+  .word-hint {
+    font-size: 13px; color: var(--text-dim); margin-top: 8px; text-align: center;
+    font-family: "SF Mono", "Fira Code", monospace;
+  }
+
+  .input-area { width: 100%; max-width: 500px; text-align: center; }
+  .input-area input {
+    width: 100%; padding: 16px 24px; font-size: 24px; text-align: center;
+    background: var(--surface-2); border: 2px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius); color: var(--text); outline: none;
+    font-family: "SF Mono", "Fira Code", "Consolas", monospace; transition: border-color 0.2s;
+  }
+  .input-area input:focus { border-color: var(--accent); }
+  .input-area input::placeholder { color: rgba(255,255,255,0.2); }
+  .input-tip { font-size: 12px; color: var(--text-dim); margin-top: 8px; }
+
+  .progress-bar { width: 100%; max-width: 500px; height: 6px; background: var(--surface); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.4s ease; }
+  .progress-text { font-size: 13px; color: var(--text-dim); margin-top: 6px; text-align: center; }
+
+  .reference-toggle {
+    margin-top: 16px; font-size: 14px; color: var(--accent); cursor: pointer;
+    background: none; border: none; text-decoration: underline; text-underline-offset: 3px;
+  }
+  .reference-toggle:hover { color: #ff6b81; }
+
+  .reference-table {
+    display: none; margin-top: 16px; width: 100%; max-width: 500px;
+    background: var(--surface); border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--radius); padding: 16px 20px;
+    column-count: 2; column-gap: 24px; font-size: 14px; line-height: 1.8;
+  }
+  .reference-table.visible { display: block; }
+  .ref-entry { display: flex; justify-content: space-between; break-inside: avoid; }
+  .ref-entry .letter { font-family: "SF Mono", "Fira Code", monospace; font-weight: 600; width: 24px; }
+  .ref-entry .word { color: var(--text-dim); }
+
+  .results { text-align: center; padding: 48px; }
+  .results h2 { font-size: 32px; margin-bottom: 8px; }
+  .results .big-score { font-size: 72px; font-weight: 700; color: var(--success); margin: 16px 0; }
+  .results .big-score.mediocre { color: var(--warning); }
+  .results .big-score.low { color: var(--accent); }
+  .results p { color: var(--text-dim); margin-bottom: 24px; }
+  .results button {
+    padding: 14px 32px; font-size: 16px; font-weight: 600; background: var(--accent);
+    color: white; border: none; border-radius: 999px; cursor: pointer; transition: transform 0.1s;
+  }
+  .results button:hover { transform: scale(1.03); }
+
+  .settings-bar { display: flex; gap: 16px; align-items: center; justify-content: center; flex-wrap: wrap; }
+  .setting-group { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-dim); }
+  .setting-group select {
+    padding: 6px 10px; background: var(--surface); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px; color: var(--text); font-size: 13px;
+  }
+
+  .formatter-example { font-family: "SF Mono", "Fira Code", monospace; font-size: 20px; color: var(--success); margin-top: 8px; }
+
+  @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+  .pop { animation: pop 0.3s ease; }
+  @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+  .shake { animation: shake 0.3s ease; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+  .pulse { animation: pulse 0.8s ease infinite; }
+
+  /* Resources footer */
+  .resources-section {
+    width: 100%; max-width: 800px; padding: 0 32px 40px;
+  }
+
+  .resources-toggle {
+    width: 100%; padding: 14px 20px;
+    background: var(--surface); border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--radius); color: var(--text-dim); font-size: 14px;
+    cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+    transition: border-color 0.2s;
+  }
+  .resources-toggle:hover { border-color: rgba(255,255,255,0.15); color: var(--text); }
+  .resources-toggle .arrow { transition: transform 0.2s; font-size: 12px; }
+  .resources-toggle.open .arrow { transform: rotate(180deg); }
+
+  .resources-panel {
+    display: none; margin-top: 8px; padding: 20px 24px;
+    background: var(--surface); border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--radius);
+  }
+  .resources-panel.visible { display: block; }
+
+  .resources-panel h3 {
+    font-size: 13px; text-transform: uppercase; letter-spacing: 1.2px;
+    color: var(--text-dim); margin-bottom: 12px; margin-top: 16px;
+  }
+  .resources-panel h3:first-child { margin-top: 0; }
+
+  .resource-link {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 8px 0; text-decoration: none;
+  }
+  .resource-link + .resource-link { border-top: 1px solid rgba(255,255,255,0.04); }
+
+  .resource-link .icon { font-size: 16px; margin-top: 1px; flex-shrink: 0; }
+  .resource-link .info { flex: 1; }
+  .resource-link .title { color: var(--accent); font-size: 14px; font-weight: 500; }
+  .resource-link .title:hover { text-decoration: underline; text-underline-offset: 2px; }
+  .resource-link .desc { color: var(--text-dim); font-size: 12px; line-height: 1.4; margin-top: 2px; }
+
+  .resources-tip {
+    margin-top: 16px; padding: 12px 16px;
+    background: rgba(233,69,96,0.08); border-radius: 8px;
+    font-size: 13px; color: var(--text-dim); line-height: 1.5;
+  }
+  .resources-tip strong { color: var(--text); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span>Talon</span> Voice Training</h1>
+  <div class="header-right">
+    <div class="streak-display" id="streak"></div>
+    <div class="score-display" id="score"></div>
+  </div>
+</header>
+
+<nav id="nav">
+  <button class="active" data-mode="alphabet">Alphabet</button>
+  <button data-mode="spelling">Spell Words</button>
+  <button data-mode="numbers">Numbers</button>
+  <button data-mode="symbols">Symbols</button>
+  <button data-mode="formatters">Formatters</button>
+</nav>
+
+<main>
+  <div class="drill-container" id="drill"></div>
+</main>
+
+<div class="resources-section">
+  <button class="resources-toggle" id="resourcesToggle" onclick="toggleResources()">
+    <span>Resources &amp; Cheat Sheets</span>
+    <span class="arrow">&#9660;</span>
+  </button>
+  <div class="resources-panel" id="resourcesPanel">
+    <h3>Quick Reference</h3>
+    <a class="resource-link" href="https://talon.wiki/Basic%20Usage/basic_usage/" target="_blank" rel="noopener">
+      <span class="icon">&#128214;</span>
+      <span class="info">
+        <span class="title">Basic Usage — Command Cheat Sheet</span>
+        <span class="desc">The essential reference: modes, alphabet, keys, symbols, formatters, mouse, editing, tabs, scrolling, and more. Start here.</span>
+      </span>
+    </a>
+    <a class="resource-link" href="https://talon.wiki/Voice%20Coding/examples/" target="_blank" rel="noopener">
+      <span class="icon">&#128187;</span>
+      <span class="info">
+        <span class="title">Voice Coding Examples</span>
+        <span class="desc">Real examples of dictating code with community commands — see how commands chain together in practice.</span>
+      </span>
+    </a>
+    <a class="resource-link" href="https://talon.wiki/Voice%20Coding/voice-coding-overview/" target="_blank" rel="noopener">
+      <span class="icon">&#127899;</span>
+      <span class="info">
+        <span class="title">Voice Coding Overview</span>
+        <span class="desc">How formatters, operators, symbols, and snippets work together for coding by voice.</span>
+      </span>
+    </a>
+
+    <h3>Customization</h3>
+    <a class="resource-link" href="https://talon.wiki/Customization/basic_customization/" target="_blank" rel="noopener">
+      <span class="icon">&#9881;</span>
+      <span class="info">
+        <span class="title">Basic Customization Guide</span>
+        <span class="desc">How to tweak vocabulary, add custom words, adjust settings, and personalize commands.</span>
+      </span>
+    </a>
+    <a class="resource-link" href="https://talon.wiki/Customization/talon-files/" target="_blank" rel="noopener">
+      <span class="icon">&#128196;</span>
+      <span class="info">
+        <span class="title">.talon File Reference</span>
+        <span class="desc">Context headers, voice command syntax, settings blocks, and tags — the complete .talon file guide.</span>
+      </span>
+    </a>
+    <a class="resource-link" href="https://talon.wiki/Customization/misc-tips/" target="_blank" rel="noopener">
+      <span class="icon">&#128161;</span>
+      <span class="info">
+        <span class="title">Tips &amp; Tricks</span>
+        <span class="desc">REPL usage, debugging, introspection with actions.find(), and other power-user tips.</span>
+      </span>
+    </a>
+
+    <h3>Community</h3>
+    <a class="resource-link" href="https://talonvoice.com/chat" target="_blank" rel="noopener">
+      <span class="icon">&#128172;</span>
+      <span class="info">
+        <span class="title">Talon Slack — #help channel</span>
+        <span class="desc">The fastest way to get answers. Very active and welcoming community.</span>
+      </span>
+    </a>
+    <a class="resource-link" href="https://github.com/talonhub/community" target="_blank" rel="noopener">
+      <span class="icon">&#128230;</span>
+      <span class="info">
+        <span class="title">Community Commands on GitHub</span>
+        <span class="desc">The source for all the default commands you're practicing with. Browse the code to see how they work.</span>
+      </span>
+    </a>
+
+    <div class="resources-tip">
+      <strong>Tip:</strong> Inside Talon itself, say <code>help alphabet</code>, <code>help symbols</code>, or <code>help formatters</code> to see interactive reference panels at any time.
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Data ──────────────────────────────────────────────────
+const ALPHABET = [
+  ["a","air"],["b","bat"],["c","cap"],["d","drum"],["e","each"],
+  ["f","fine"],["g","gust"],["h","harp"],["i","sit"],["j","jury"],
+  ["k","crunch"],["l","look"],["m","made"],["n","near"],["o","odd"],
+  ["p","pit"],["q","quench"],["r","red"],["s","sun"],["t","trap"],
+  ["u","urge"],["v","vest"],["w","whale"],["x","plex"],["y","yank"],["z","zip"]
+];
+const ALPHA_MAP = Object.fromEntries(ALPHABET.map(([l, w]) => [l, w]));
+
+const NUMBERS = [
+  ["0","zero"],["1","one"],["2","two"],["3","three"],["4","four"],
+  ["5","five"],["6","six"],["7","seven"],["8","eight"],["9","nine"]
+];
+
+const SYMBOLS = [
+  [".","period / dot"],[",","comma"],[";","semicolon"],[":","colon"],
+  ["/","slash"],["?","question mark"],["!","bang"],["*","star"],
+  ["#","hash sign"],["@","at sign"],["$","dollar sign"],["-","dash"],
+  ["_","underscore"],["(","left paren"],[")","right paren"],
+  ["[","left square"],["]","right square"],["{","left brace"],["}","right brace"],
+  ["=","equals"],["+","plus"],["~","tilde"],["^","caret"],["|","pipe"],
+  ["<","left angle"],[">","right angle"],["'","quote"],["\"","double quote"],
+  ["`","back tick"],["&","ampersand"],["%","percent sign"]
+];
+
+const FORMATTERS = [
+  { name: "snake", spoken: "snake", input: "hello world", expected: "hello_world" },
+  { name: "camel", spoken: "camel", input: "hello world", expected: "helloWorld" },
+  { name: "hammer", spoken: "hammer", input: "hello world", expected: "HelloWorld" },
+  { name: "kebab", spoken: "kebab", input: "hello world", expected: "hello-world" },
+  { name: "dotted", spoken: "dotted", input: "hello world", expected: "hello.world" },
+  { name: "smash", spoken: "smash", input: "hello world", expected: "helloworld" },
+  { name: "all cap", spoken: "all cap", input: "hello world", expected: "HELLO WORLD" },
+  { name: "title", spoken: "title", input: "hello world", expected: "Hello World" },
+  { name: "sentence", spoken: "sentence", input: "hello world", expected: "Hello world" },
+  { name: "snake", spoken: "snake", input: "my cool function", expected: "my_cool_function" },
+  { name: "camel", spoken: "camel", input: "get user name", expected: "getUserName" },
+  { name: "hammer", spoken: "hammer", input: "app controller", expected: "AppController" },
+  { name: "kebab", spoken: "kebab", input: "main content area", expected: "main-content-area" },
+];
+
+const SPELLING_WORDS = [
+  // Short (3-4 letters)
+  "cat", "dog", "run", "jump", "code", "fish", "help", "quit", "zoom", "flex",
+  "bug", "fix", "vim", "git", "map", "key", "log", "tab", "hex", "api",
+  // Medium (5-6 letters)
+  "talon", "voice", "macro", "quick", "debug", "slack", "pixel", "chunk",
+  "input", "query", "index", "shift", "scope", "print", "stack", "parse",
+  // Longer (7+ letters)
+  "command", "context", "capture", "setting", "actions", "module",
+];
+
+// ── State ─────────────────────────────────────────────────
+let mode = "alphabet";
+let items = [];
+let current = 0;
+let correct = 0;
+let total = 0;
+let streak = 0;
+let bestStreak = 0;
+let drillCount = 26;
+let showingResult = false;
+let refVisible = false;
+let pendingTimeout = null;
+let attempts = 0;       // 0 = first try, 1 = retry after wrong
+let retryQueue = [];    // items to revisit later
+let spellingPos = 0;    // position within current word (spelling mode)
+let spellingAttempts = 0; // attempts on current character in spelling mode
+
+// ── Audio ─────────────────────────────────────────────────
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function playTone(freq, duration, type = "sine") {
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type; osc.frequency.value = freq; gain.gain.value = 0.08;
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.start(); osc.stop(audioCtx.currentTime + duration);
+}
+
+function playCorrect() { playTone(880, 0.12); setTimeout(() => playTone(1100, 0.15), 80); }
+function playWrong() { playTone(280, 0.2, "triangle"); }
+function playRetry() { playTone(440, 0.15, "triangle"); }
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ── Start a drill ─────────────────────────────────────────
+function startDrill() {
+  if (pendingTimeout) { clearTimeout(pendingTimeout); pendingTimeout = null; }
+  showingResult = false;
+  current = 0; correct = 0; total = 0; streak = 0; bestStreak = 0;
+  refVisible = false; attempts = 0; retryQueue = [];
+  spellingPos = 0; spellingAttempts = 0;
+
+  if (mode === "alphabet") {
+    items = shuffle(ALPHABET).slice(0, drillCount);
+  } else if (mode === "spelling") {
+    const wordLen = drillCount <= 10 ? "short" : drillCount <= 15 ? "medium" : "all";
+    let pool;
+    if (wordLen === "short") pool = SPELLING_WORDS.filter(w => w.length <= 4);
+    else if (wordLen === "medium") pool = SPELLING_WORDS.filter(w => w.length <= 6);
+    else pool = SPELLING_WORDS;
+    items = shuffle(pool).slice(0, Math.min(drillCount, pool.length));
+  } else if (mode === "numbers") {
+    items = shuffle(NUMBERS).slice(0, drillCount);
+  } else if (mode === "symbols") {
+    items = shuffle(SYMBOLS).slice(0, drillCount);
+  } else if (mode === "formatters") {
+    items = shuffle(FORMATTERS).slice(0, drillCount);
+  }
+
+  updateScore();
+  renderDrill();
+}
+
+// ── Render ────────────────────────────────────────────────
+function renderDrill() {
+  const drill = document.getElementById("drill");
+
+  if (current >= items.length) {
+    showResults();
+    return;
+  }
+
+  const item = items[current];
+  const progress = (current / items.length) * 100;
+
+  if (mode === "spelling") {
+    renderSpelling(drill, item, progress);
+  } else if (mode === "formatters") {
+    renderFormatter(drill, item, progress);
+  } else {
+    renderSingleChar(drill, item, progress);
+  }
+
+  const input = document.getElementById("answer");
+  input.focus();
+  input.addEventListener("input", handleInput);
+}
+
+function renderSingleChar(drill, item, progress) {
+  const displayChar = (mode === "alphabet") ? item[0].toUpperCase() : item[0];
+  const label = mode === "alphabet" ? "Say the word for" : mode === "numbers" ? "Say" : "Say the name for";
+  const instruction = mode === "alphabet"
+    ? "Say the <strong>phonetic word</strong> for the letter shown"
+    : mode === "numbers"
+      ? "Say the <strong>number</strong> shown — Talon will type it"
+      : "Say the <strong>symbol name</strong> shown below";
+
+  const retryBadge = attempts > 0
+    ? `<div style="font-size:13px;color:var(--warning);margin-bottom:8px;">Try again!</div>`
+    : "";
+
+  drill.innerHTML = `
+    <div class="instruction">${instruction}</div>
+    <div class="prompt-card" id="card">
+      ${retryBadge}
+      <div class="prompt-label">${label}</div>
+      <div class="prompt-letter">${displayChar}</div>
+      <div class="prompt-subtext">${mode === "symbols" ? item[1] : ""}</div>
+      <div class="hint" id="hint"></div>
+    </div>
+    <div class="input-area">
+      <input type="text" id="answer" placeholder="Talon will type here..." autocomplete="off" spellcheck="false">
+      <div class="input-tip">Click here first to focus, then speak the command</div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
+    <div class="progress-text">${current} of ${items.length}</div>
+    <div class="settings-bar">${renderSettings()}</div>
+    ${mode === "alphabet" ? renderRefToggle() : ""}
+  `;
+}
+
+function renderSpelling(drill, word, progress) {
+  const chars = word.split("");
+  const charBoxes = chars.map((ch, i) => {
+    let cls = "word-char";
+    if (i < spellingPos) cls += " done";
+    else if (i === spellingPos) cls += " active";
+    const display = i < spellingPos ? ch : (i === spellingPos ? ch.toUpperCase() : "");
+    return `<div class="${cls}" id="char-${i}">${display}</div>`;
+  }).join("");
+
+  const currentChar = chars[spellingPos];
+  const phoneticHint = ALPHA_MAP[currentChar] || "?";
+
+  const retryBadge = spellingAttempts > 0
+    ? `<div style="font-size:13px;color:var(--warning);margin-bottom:4px;">Try again! Say "${phoneticHint}"</div>`
+    : "";
+
+  drill.innerHTML = `
+    <div class="instruction">
+      Spell the word by <strong>chaining alphabet commands</strong> — try saying all the letters in one breath!
+    </div>
+    <div class="prompt-card" id="card">
+      ${retryBadge}
+      <div class="prompt-label">Spell this word</div>
+      <div class="prompt-word">${word}</div>
+      <div class="word-progress">${charBoxes}</div>
+      <div class="word-hint">
+        ${spellingPos < chars.length ? `Next: <strong>${currentChar.toUpperCase()}</strong> = "${phoneticHint}"` : ""}
+      </div>
+      <div class="hint" id="hint"></div>
+    </div>
+    <div class="input-area">
+      <input type="text" id="answer" placeholder="Talon will type here..." autocomplete="off" spellcheck="false" maxlength="${word.length}">
+      <div class="input-tip">Try saying the whole word: "${chars.map(c => ALPHA_MAP[c] || c).join(" ")}"</div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
+    <div class="progress-text">${current} of ${items.length}</div>
+    <div class="settings-bar">${renderSettings()}</div>
+    ${renderRefToggle()}
+  `;
+}
+
+function renderFormatter(drill, item, progress) {
+  const retryBadge = attempts > 0
+    ? `<div style="font-size:13px;color:var(--warning);margin-bottom:8px;">Try again!</div>`
+    : "";
+
+  drill.innerHTML = `
+    <div class="instruction">Say <strong>"${item.spoken} ${item.input}"</strong> to format the text</div>
+    <div class="prompt-card" id="card">
+      ${retryBadge}
+      <div class="prompt-label">Formatter</div>
+      <div class="prompt-word">${item.spoken}</div>
+      <div class="prompt-subtext">Words: ${item.input}</div>
+      <div class="formatter-example">${item.expected}</div>
+      <div class="hint" id="hint"></div>
+    </div>
+    <div class="input-area">
+      <input type="text" id="answer" placeholder="Talon will type here..." autocomplete="off" spellcheck="false">
+      <div class="input-tip">Click here first to focus, then speak the command</div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
+    <div class="progress-text">${current} of ${items.length}</div>
+    <div class="settings-bar">${renderSettings()}</div>
+  `;
+}
+
+function renderSettings() {
+  const maxMap = {
+    alphabet: 26, spelling: SPELLING_WORDS.length, numbers: 10,
+    symbols: SYMBOLS.length, formatters: FORMATTERS.length
+  };
+  const maxItems = maxMap[mode] || 26;
+  let options;
+  if (mode === "numbers") options = [10];
+  else if (mode === "formatters") options = [5, 10, Math.min(FORMATTERS.length, 13)];
+  else if (mode === "spelling") options = [5, 8, 10, 15];
+  else options = [10, 15, 20, maxItems];
+
+  return `
+    <div class="setting-group">
+      <label>Questions:</label>
+      <select id="countSelect" onchange="changeCount(this.value)">
+        ${options.map(n => `<option value="${n}" ${n === drillCount ? "selected" : ""}>${n >= maxItems ? "All (" + maxItems + ")" : n}</option>`).join("")}
+      </select>
+    </div>
+    ${mode === "spelling" ? `
+    <div class="setting-group">
+      <label>Word length:</label>
+      <select id="wordLenSelect" onchange="startDrill()">
+        <option value="short" ${drillCount <= 10 ? "selected" : ""}>Short (3-4)</option>
+        <option value="medium">Medium (5-6)</option>
+        <option value="all">All lengths</option>
+      </select>
+    </div>` : ""}
+    <button class="reference-toggle" onclick="restartDrill()">Restart</button>
+  `;
+}
+
+function renderRefToggle() {
+  const table = ALPHABET.map(([l, w]) =>
+    `<div class="ref-entry"><span class="letter">${l}</span><span class="word">${w}</span></div>`
+  ).join("");
+  return `
+    <button class="reference-toggle" onclick="toggleRef()">
+      ${refVisible ? "Hide" : "Show"} alphabet reference
+    </button>
+    <div class="reference-table ${refVisible ? "visible" : ""}" id="refTable">${table}</div>
+  `;
+}
+
+// ── Input handler ─────────────────────────────────────────
+function handleInput(e) {
+  if (showingResult) return;
+
+  const input = e.target;
+  const typed = input.value;
+  const item = items[current];
+  const card = document.getElementById("card");
+  const hint = document.getElementById("hint");
+
+  if (mode === "spelling") {
+    handleSpellingInput(input, typed, item, card, hint);
+    return;
+  }
+
+  if (mode === "formatters") {
+    if (typed === item.expected) {
+      markCorrect(card, hint, input);
+    } else if (typed.length >= item.expected.length) {
+      handleWrong(card, hint, input, `Expected: ${item.expected}`);
+    }
+    return;
+  }
+
+  // Single-character modes
+  const expected = item[0];
+  if (typed.length === 0) return;
+  const lastChar = typed.slice(-1);
+
+  if (lastChar === expected) {
+    markCorrect(card, hint, input);
+  } else {
+    const hintText = mode === "alphabet"
+      ? `The word is "${item[1]}"`
+      : `Say "${item[1]}"`;
+    handleWrong(card, hint, input, hintText);
+  }
+}
+
+function handleSpellingInput(input, typed, word, card, hint) {
+  const chars = word.split("");
+  if (typed.length === 0) return;
+
+  const newChar = typed.slice(-1);
+  const expectedChar = chars[spellingPos];
+
+  if (newChar === expectedChar) {
+    // Correct character
+    spellingAttempts = 0;
+    spellingPos++;
+
+    // Update the character box
+    const charBox = document.getElementById(`char-${spellingPos - 1}`);
+    if (charBox) {
+      charBox.classList.remove("active", "wrong");
+      charBox.classList.add("done");
+      charBox.textContent = expectedChar;
+    }
+
+    // Mark next character as active
+    const nextBox = document.getElementById(`char-${spellingPos}`);
+    if (nextBox) {
+      nextBox.classList.add("active");
+      nextBox.textContent = chars[spellingPos].toUpperCase();
+    }
+
+    // Update the hint for next character
+    if (spellingPos < chars.length) {
+      const nextChar = chars[spellingPos];
+      const nextPhonetic = ALPHA_MAP[nextChar] || "?";
+      const wordHint = card.querySelector(".word-hint");
+      if (wordHint) wordHint.innerHTML = `Next: <strong>${nextChar.toUpperCase()}</strong> = "${nextPhonetic}"`;
+      hint.textContent = "";
+      // Update retry badge if visible
+      const retryDiv = card.querySelector("[style*='color:var(--warning)']");
+      if (retryDiv) retryDiv.remove();
+    }
+
+    playTone(600 + (spellingPos * 80), 0.08); // ascending pitch per letter
+
+    // Word complete?
+    if (spellingPos >= chars.length) {
+      markCorrect(card, hint, input);
+    }
+  } else {
+    // Wrong character in spelling
+    spellingAttempts++;
+    const expectedPhonetic = ALPHA_MAP[expectedChar] || "?";
+
+    // Remove the wrong character from input
+    input.value = typed.slice(0, -1);
+
+    const charBox = document.getElementById(`char-${spellingPos}`);
+
+    if (spellingAttempts >= 2) {
+      // Second miss on this letter — auto-fill it and move on
+      playWrong();
+      if (charBox) {
+        charBox.classList.remove("active");
+        charBox.classList.add("wrong");
+        charBox.textContent = expectedChar;
+      }
+      hint.innerHTML = `<span class="moving-on">Wrong again — filled "${expectedPhonetic}" for you</span>`;
+      spellingAttempts = 0;
+      spellingPos++;
+
+      // Set up next character
+      const nextBox = document.getElementById(`char-${spellingPos}`);
+      if (nextBox) { nextBox.classList.add("active"); nextBox.textContent = chars[spellingPos].toUpperCase(); }
+
+      // Auto-add the correct character to input
+      input.value = typed.slice(0, -1) + expectedChar;
+
+      if (spellingPos >= chars.length) {
+        // Word done but with errors — count as wrong
+        showingResult = true;
+        total++;
+        streak = 0;
+        card.classList.add("incorrect");
+        input.disabled = true;
+        updateScore();
+        pendingTimeout = setTimeout(advance, 1200);
+      } else {
+        const nextChar = chars[spellingPos];
+        const nextPhonetic = ALPHA_MAP[nextChar] || "?";
+        const wordHint = card.querySelector(".word-hint");
+        if (wordHint) wordHint.innerHTML = `Next: <strong>${nextChar.toUpperCase()}</strong> = "${nextPhonetic}"`;
+      }
+    } else {
+      // First miss — show hint, let them retry
+      playRetry();
+      if (charBox) {
+        charBox.classList.add("wrong");
+        setTimeout(() => charBox.classList.remove("wrong"), 400);
+      }
+      hint.textContent = `Say "${expectedPhonetic}" for ${expectedChar.toUpperCase()}`;
+    }
+  }
+}
+
+// ── Correct / Wrong with retry ────────────────────────────
+function markCorrect(card, hint, input) {
+  showingResult = true;
+  correct++;
+  total++;
+  streak++;
+  if (streak > bestStreak) bestStreak = streak;
+  attempts = 0;
+  playCorrect();
+  card.classList.add("correct", "pop");
+  hint.textContent = "";
+  input.disabled = true;
+  updateScore();
+  pendingTimeout = setTimeout(advance, 600);
+}
+
+function handleWrong(card, hint, input, hintText) {
+  if (attempts === 0) {
+    // First wrong — show the answer, let them retry
+    attempts = 1;
+    showingResult = true;
+    playRetry();
+    card.classList.add("retry", "shake");
+    hint.innerHTML = `${hintText} — <strong>try again!</strong>`;
+    input.disabled = true;
+    // Re-render same item after a pause so user can read the hint
+    pendingTimeout = setTimeout(() => {
+      showingResult = false;
+      renderDrill();
+    }, 1800);
+  } else {
+    // Second wrong — count it and move on
+    showingResult = true;
+    total++;
+    streak = 0;
+    attempts = 0;
+    playWrong();
+    card.classList.add("incorrect", "shake");
+    hint.innerHTML = `<span class="moving-on">Wrong again, but moving on for now.</span><br>${hintText}`;
+    input.disabled = true;
+    updateScore();
+    pendingTimeout = setTimeout(advance, 2000);
+  }
+}
+
+function advance() {
+  pendingTimeout = null;
+  showingResult = false;
+  attempts = 0;
+  spellingPos = 0;
+  spellingAttempts = 0;
+  current++;
+  renderDrill();
+}
+
+// ── Score ─────────────────────────────────────────────────
+function updateScore() {
+  const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
+  document.getElementById("score").innerHTML = total > 0
+    ? `<strong>${correct}</strong> / ${total} (${pct}%)`
+    : "";
+  document.getElementById("streak").textContent = streak >= 3 ? `${streak} in a row!` : "";
+}
+
+// ── Results ───────────────────────────────────────────────
+function showResults() {
+  const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
+  const cls = pct >= 80 ? "" : pct >= 50 ? "mediocre" : "low";
+  const msg = pct === 100 ? "Perfect score!"
+    : pct >= 80 ? "Great work!"
+    : pct >= 50 ? "Getting there — keep practicing!"
+    : "No worries, practice makes perfect!";
+
+  document.getElementById("drill").innerHTML = `
+    <div class="results">
+      <h2>Round Complete</h2>
+      <div class="big-score ${cls}">${pct}%</div>
+      <p>${correct} of ${total} correct &middot; best streak: ${bestStreak}<br>${msg}</p>
+      <button onclick="startDrill()">Go Again</button>
+    </div>
+  `;
+}
+
+// ── Controls ──────────────────────────────────────────────
+function changeCount(val) { drillCount = parseInt(val); startDrill(); }
+function restartDrill() { startDrill(); }
+function toggleRef() {
+  refVisible = !refVisible;
+  const table = document.getElementById("refTable");
+  if (table) table.classList.toggle("visible");
+}
+
+function toggleResources() {
+  const panel = document.getElementById("resourcesPanel");
+  const btn = document.getElementById("resourcesToggle");
+  panel.classList.toggle("visible");
+  btn.classList.toggle("open");
+}
+
+// ── Nav ───────────────────────────────────────────────────
+document.querySelectorAll("nav button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    mode = btn.dataset.mode;
+    const maxMap = {
+      alphabet: 26, spelling: SPELLING_WORDS.length, numbers: 10,
+      symbols: SYMBOLS.length, formatters: FORMATTERS.length
+    };
+    const max = maxMap[mode] || 26;
+    drillCount = Math.min(drillCount, max);
+    if (mode === "numbers") drillCount = 10;
+    if (mode === "spelling" && drillCount > 15) drillCount = 10;
+    startDrill();
+  });
+});
+
+// ── Init ──────────────────────────────────────────────────
+startDrill();
+</script>
+</body>
+</html>

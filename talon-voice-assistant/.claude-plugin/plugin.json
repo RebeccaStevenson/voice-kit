@@ -1,0 +1,9 @@
+{
+  "name": "talon-voice-assistant",
+  "version": "0.1.0",
+  "description": "Beginner-friendly guide to installing Talon voice control, creating custom voice commands, and testing them — no prior experience required",
+  "author": {
+    "name": "Rebecca Stevenson"
+  },
+  "keywords": ["talon", "voice-control", "accessibility", "commands", "speech-recognition"]
+}
