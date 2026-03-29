@@ -1,8 +1,6 @@
 # Talon Voice Assistant Plugin
 
-A beginner-friendly Claude plugin that guides new users through installing, configuring, and creating custom voice commands with [Talon](https://talonvoice.com/) — no prior experience required.
-
-For Becky's local setup, AI agents work from `~/.talon/` as the workspace root. Talon itself still auto-loads command repos from `~/.talon/user/`.
+An agent plugin (i.e. collection of skills) that guides new users through installing, configuring, and creating custom voice commands with [Talon](https://talonvoice.com/) — no prior experience required.
 
 ## What This Plugin Does
 
@@ -20,7 +18,7 @@ This plugin provides seven skills that walk you through the complete Talon journ
 
 ## Training Page
 
-The plugin includes an interactive HTML training page (`resources/talon-training.html`) for practicing Talon voice commands in the browser. Open it locally and use your voice to complete drills.
+The plugin includes an interactive HTML training page (`resources/talon-training.html`) for practicing Talon voice commands in the browser. Open it locally and use your voice to complete drills. (this is still quite incomplete)
 
 **Modes:**
 
@@ -34,7 +32,7 @@ Features: score tracking, streak counter, sound cues, adjustable question counts
 
 ## How to Use
 
-After installing the plugin, just ask Claude for help with any Talon-related task. For example:
+After installing the plugin or just adding the set of skills to your setup, just ask your agent for help with any Talon-related task. For example:
 
 - "Help me install Talon on my Mac"
 - "Set up Rango so I can control the browser with my voice"
@@ -102,6 +100,3 @@ zip -r ../talon-voice-assistant.plugin . -x '*.git*' -x '*.DS_Store'
 - [Talon Practice](https://chaosparrot.github.io/talon_practice/) — Interactive browser-based drills
 - [Talon Slack](https://talonvoice.com/chat) — Community support (`#help` channel)
 
-## License
-
-MIT
