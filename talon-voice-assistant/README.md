@@ -1,10 +1,7 @@
-# Talon Voice Assistant Plugin
+# Talon-voice-assistant
 
-An agent plugin (i.e. collection of skills) that guides new users through installing, configuring, and creating custom voice commands with [Talon](https://talonvoice.com/) — no prior experience required.
+A collection of skills that guides new users through installing, configuring, and creating custom voice commands with [Talon](https://talonvoice.com/), hopefully making the process mostly hands off i.e. the agent does pretty much everything for you. Beginner friendly, no coding experience required.
 
-## What This Plugin Does
-
-This plugin provides seven skills that walk you through the complete Talon journey, from first install to writing and testing your own voice commands:
 
 | Skill | What it helps with |
 |---|---|
@@ -16,23 +13,15 @@ This plugin provides seven skills that walk you through the complete Talon journ
 | **Create Python Command** | Build advanced commands with Python logic — file operations, conditional behavior, reusable actions |
 | **Test and Debug** | Verify commands work using the Talon log, REPL introspection, pytest, and live voice testing |
 
-## Training Page
-
-The plugin includes an interactive HTML training page (`resources/talon-training.html`) for practicing Talon voice commands in the browser. Open it locally and use your voice to complete drills. (this is still quite incomplete)
-
-**Modes:**
-
-- **Alphabet** — Say the phonetic word for each letter (e.g., "gust" for G). Retry on wrong answers before moving on.
-- **Spell Words** — Chain alphabet commands to spell whole words. Letter boxes fill in as you go, with per-character retry and hints.
-- **Numbers** — Say the number shown.
-- **Symbols** — Say the name for each punctuation mark or special character.
-- **Formatters** — Apply formatters like `snake`, `camel`, and `kebab` to sample text.
-
-Features: score tracking, streak counter, sound cues, adjustable question counts, alphabet reference panel.
-
 ## How to Use
 
-After installing the plugin or just adding the set of skills to your setup, just ask your agent for help with any Talon-related task. For example:
+**Installation**
+
+- **Cowork** — This is usually the easiest path if you are not comfortable working in the terminal or running install commands yourself. You can skim the official [Discover and install plugins](https://docs.anthropic.com/en/discover-plugins) guide (and [Create plugins](https://docs.anthropic.com/en/docs/claude-code/plugins) if you want more context), then ask cowork to install this repository as a plugin for you.
+- **Claude Code, Codex, Cursor, and similar** — You can copy each subfolder under `skills/` into that product’s skills directory so these guides appear like any other skill.
+- **Plugins** — Claude Code and Codex can also load this project as a plugin, but their plugin documentation is changing quickly; until that stabilizes, copying the skill folders is the most straightforward option.
+
+After installing, just ask your agent for help with any Talon-related task. For example:
 
 - "Help me install Talon on my Mac"
 - "Set up Rango so I can control the browser with my voice"
@@ -40,8 +29,6 @@ After installing the plugin or just adding the set of skills to your setup, just
 - "Create a voice command that opens my notes folder"
 - "Write a Python action that counts words in my selection"
 - "My command isn't working — help me debug it"
-
-Claude will walk you through each step with clear, jargon-free instructions.
 
 ## Prerequisites
 
@@ -81,14 +68,7 @@ talon-voice-assistant/
 └── README.md
 ```
 
-## Building the Plugin
-
-To package the source into a `.plugin` file:
-
-```bash
-cd talon-voice-assistant
-zip -r ../talon-voice-assistant.plugin . -x '*.git*' -x '*.DS_Store'
-```
+Packaging, versioning, and distribution are covered in [Create plugins](https://docs.anthropic.com/en/docs/claude-code/plugins) and the [Plugins reference](https://docs.anthropic.com/en/plugins-reference).
 
 ## Key Resources
 
@@ -100,3 +80,7 @@ zip -r ../talon-voice-assistant.plugin . -x '*.git*' -x '*.DS_Store'
 - [Talon Practice](https://chaosparrot.github.io/talon_practice/) — Interactive browser-based drills
 - [Talon Slack](https://talonvoice.com/chat) — Community support (`#help` channel)
 
+
+## Training Page
+
+The plugin includes an interactive HTML training page at `resources/talon-training.html`. Double click it or ask the agent to open it for you. For more practice in the browser, try [Talon Practice](https://chaosparrot.github.io/talon_practice/) as well.

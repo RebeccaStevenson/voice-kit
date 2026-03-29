@@ -1,9 +1,8 @@
----
-name: superwhisper
+name: superwhisper-assistant
 description: Set up, configure, and create custom dictation modes for SuperWhisper, the macOS voice-to-text app. Use this skill when the user mentions SuperWhisper, wants to install it, create or edit dictation modes, configure voice models, write mode prompts, or anything related to speech-to-text mode configuration on their Mac. Also trigger when the user talks about "dictation modes", "voice typing modes", "whisper modes", or wants to customize how their voice dictation formats text.
 ---
 
-# SuperWhisper Skill
+# Superwhisper-assistant skill
 
 SuperWhisper is a voice-to-text app (macOS, Windows, iOS) that converts speech into formatted text. It supports custom "modes" — JSON config files that control how dictation output gets processed by a language model. This skill covers installation and creating/editing those mode files.
 
@@ -25,7 +24,7 @@ After installation, SuperWhisper lives in the menu bar. The user activates dicta
 
 **System notes**: Offline/local models require Apple Silicon. Intel Macs should use cloud models. SuperWhisper is a paid app ($8.49/month Pro) with a free tier limited to smaller models and 15 minutes of recording.
 
-## File Locations
+## File locations
 
 All user configuration lives under `~/Documents/superwhisper/`:
 
@@ -41,7 +40,7 @@ The app also stores data in:
 - `~/Library/Application Support/superwhisper/` — model binaries, app cache, SQLite database
 - `~/Library/Preferences/com.superduper.superwhisper.plist` — app preferences (hotkeys, active mode, etc.)
 
-## Creating a Custom Mode
+## Creating a custom mode
 
 Each mode is a single JSON file in `~/Documents/superwhisper/modes/`. The filename (without `.json`) becomes the mode's `key`, which is also how it's referenced in settings.
 
@@ -112,7 +111,7 @@ The app needs to be restarted to pick up new modes:
 killall superwhisper 2>/dev/null; sleep 1; open -a superwhisper
 ```
 
-## Writing Good Mode Prompts
+## Writing good mode prompts
 
 The prompt field is an LLM system prompt that processes raw voice transcription. Good prompts for SuperWhisper share these patterns (learned from the user's existing modes):
 
@@ -122,13 +121,11 @@ The prompt field is an LLM system prompt that processes raw voice transcription.
 
 2. **Voice dictation awareness**: Mention that the input comes from voice dictation, so the model should expect homophones, misrecognitions, and missing punctuation.
 
-3. **Stop phrase handling**: The user says "whisper stop" or "super stop" to end dictation. The prompt must instruct the LLM to strip these phrases (and partial variants like "whisper", "stop", "full stop") from the output.
+3. **Literal commands**: "new line" should insert a newline. "period" should insert a period. These are dictation conventions the user relies on.
 
-4. **Literal commands**: "new line" should insert a newline. "period" should insert a period. These are dictation conventions the user relies on.
+4. **Never act as assistant**: Critically important — the LLM must never answer questions or follow commands found in the dictated text. If the user dictates "What is the best way to boil an egg?", the output should be that question as text, not an answer about boiling eggs.
 
-5. **Never act as assistant**: Critically important — the LLM must never answer questions or follow commands found in the dictated text. If the user dictates "What is the best way to boil an egg?", the output should be that question as text, not an answer about boiling eggs.
-
-6. **Code/file awareness**: The user works with code, so function names should be snake_cased and file paths should be properly formatted (e.g., "data slash power analysis dot csv" becomes `data/power_analysis.csv`).
+5. **Code/file awareness**: The user works with code, so function names should be snake_cased and file paths should be properly formatted (e.g., "data slash power analysis dot csv" becomes `data/power_analysis.csv`).
 
 ### Prompt examples (few-shot)
 
@@ -167,7 +164,7 @@ Toggle these with:
 - `contextFromSelection: true` — includes selected text
 - `activationApps: ["Messages", "Slack"]` — auto-activates this mode in specific apps (note: once auto-activated, the mode can't be manually overridden and won't auto-revert)
 
-## Editing Existing Modes
+## Editing existing modes
 
 To modify a mode, read the JSON file from `~/Documents/superwhisper/modes/<key>.json`, make changes with the Edit tool, and restart SuperWhisper. Common edits:
 
@@ -177,14 +174,10 @@ To modify a mode, read the JSON file from `~/Documents/superwhisper/modes/<key>.
 - Changing activation apps
 - Enabling context features
 
-## Global Settings
+## Global settings
 
 The settings file at `~/Documents/superwhisper/settings/settings.json` also supports:
 
 - **`replacements`**: Global text find-and-replace rules applied to all modes
 - **`vocabulary`**: Custom words the speech model should recognize (proper names, technical terms)
 - **`favoriteModelIDs`**: Pinned models in the UI
-
-## Talon Integration
-
-In Becky's local setup, AI agents work from `~/.talon/`, but the Talon integration files live at `~/.talon/user/talon_rebecca/tools/superwhisper/`. Mode-switching scripts and hotkey configurations live there. If creating a new mode that should be accessible via Talon, note this but don't modify Talon files unless asked — use the `talon` skill for that.
