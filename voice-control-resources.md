@@ -9,8 +9,8 @@
 
 ## Voice dictation (speech-to-text)
 
-- **[Wispr Flow](https://wisprflow.ai)** — AI dictation across apps on Mac, Windows, iOS, and Android; 100+ languages; Flow Pro is $15/user/month monthly or $12/user/month annual, with a free Basic tier and 14-day trial
-- **[Superwhisper](https://superwhisper.com)** — AI voice-to-text for macOS, Windows, iPhone, and iPad; customizable modes; local and cloud models; Pro is $8.49/month, $84.99/year, or $249.99 once, with a free tier available
+- **[Wispr Flow](https://wisprflow.ai)** — AI dictation across apps on Mac, Windows, iOS, and Android; 100+ languages; free tier available, paid from $12/month
+- **[Superwhisper](https://superwhisper.com)** — AI voice-to-text for macOS, Windows, iPhone, and iPad; customizable modes; local and cloud models; free tier available, paid from $8.49/month
   - [`superwhisper-assistant` skill](superwhisper-assistant/) — skill files and references for creating custom dictation modes
 - **[Dragon](https://www.nuance.com/dragon.html)** — long-standing dictation product (Windows-focused today); still good for editing text especially in Microsoft Word
 
@@ -23,4 +23,4 @@
 ## Whisper-based (OpenAI Whisper and clients)
 
 - **[OpenAI Whisper](https://github.com/openai/whisper)** — open-source speech-to-text model; used by many apps and scripts; run locally or via APIs depending on integration
-- **[MacWhisper](https://macwhisper.com/)** — Mac app for Whisper-based transcription, recording, file export, and optional system-wide dictation; also available on iPhone/iPad; free download with Pro from EUR59 as a one-time purchase
+- **[MacWhisper](https://macwhisper.com/)** — Mac app for Whisper-based transcription, recording, file export, and optional system-wide dictation; also available on iPhone/iPad; free tier available, paid from EUR59 one-time
