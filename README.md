@@ -2,30 +2,25 @@
 
 ## What this is
 
-Skills and resources for setting up and customizing:
-- powerful voice control software (Talon Voice)
-- dictation modes (e.g. email, prompting) and workflows using the dictation software Superwhisper
+Skills and resources for setting up and customizing voice control (Talon Voice) and dictation (SuperWhisper) tools
 
 ## Who this is for
 
-- Folks with repetitive strain injury (RSI) or other mobility impairments
-- People that want to not only talk to their agents using dictation software like Wispr Flow, but want to use voice to completely control their computer, setting up voice commands for everything from simple keyboard shortcuts to multi-step workflows.
-- Parents with their hands full of children
-- Total beginners with no coding experience, coding and voice control power users, everyone in between
+- People with repetitive strain injury (RSI) or other mobility constraints
+- People that want to set up voice-powered automations for everything from simple keyboard shortcuts to multi-step workflows
+- Parents who want to work while holding babies
+- Non-coders and software engineers and everyone in between
 
-## What you can do with Voice Kit
+## What you can do with these skills
 
 | Workflow | Example request |
 |---|---|
 | Install Talon and the community command set | "Help me install Talon on my Mac." |
 | Add browser voice control with Rango | "Set up Rango so I can control Chrome with my voice." |
 | Create simple Talon commands | "Make a voice command that opens my notes folder." |
-| Create Python-backed Talon actions | "Write a Talon action that transforms the selected text." |
+| Create Python-backed Talon actions | "Make a voice command that starts a new terminal window and launches VS Code in a specified folder." |
 | Test and debug Talon commands | "My Talon command is not working. Help me debug it." |
-| Adjust Talon timing and display settings | "Change how long Talon waits before treating a phrase as finished." |
-| Create or edit SuperWhisper modes | "Make a SuperWhisper mode for emailing." |
-| Tune dictation for prompting and structured writing | "Create a SuperWhisper mode for talking to coding agents." |
-| Future voice memo workflows | "Turn my voice memos into transcripts and action items." |
+| Create or edit SuperWhisper modes | "Make a SuperWhisper mode for email with the following specifications..." |
 
 ## Voice control skills
 
@@ -49,4 +44,4 @@ Skills and resources for setting up and customizing:
 
 ## Resource links
 
-See [resource-links.md](resource-links.md) for the full list.
+See [resource-links.md](resource-links.md) for a more complete list of tools and resources that I use
