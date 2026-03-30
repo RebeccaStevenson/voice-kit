@@ -22,11 +22,12 @@ Skills and resources for setting up and customizing:
 | Create simple Talon commands | "Make a voice command that opens my notes folder." |
 | Create Python-backed Talon actions | "Write a Talon action that transforms the selected text." |
 | Test and debug Talon commands | "My Talon command is not working. Help me debug it." |
+| Adjust Talon timing and display settings | "Change how long Talon waits before treating a phrase as finished." |
 | Create or edit SuperWhisper modes | "Make a SuperWhisper mode for emailing." |
 | Tune dictation for prompting and structured writing | "Create a SuperWhisper mode for talking to coding agents." |
 | Future voice memo workflows | "Turn my voice memos into transcripts and action items." |
 
-## Talon-based skills
+## Voice control skills
 
 | Skill | What it does | Example request |
 |---|---|---|
@@ -37,6 +38,7 @@ Skills and resources for setting up and customizing:
 | [talon-create-basic-command/](talon-create-basic-command/) | Creates `.talon` commands for shortcuts, text insertion, and app-specific actions. | "Make a command that pastes my email signature." |
 | [talon-create-python-command/](talon-create-python-command/) | Builds more advanced Talon commands with Python logic and reusable actions. | "Create a Talon action that cleans up selected text." |
 | [talon-test-and-debug/](talon-test-and-debug/) | Checks logs, REPL output, and tests so broken commands can be diagnosed quickly. | "This command loads but never triggers. Debug it." |
+| `talon-settings` | Planned skill for editing Talon settings such as phrase timeout timing, pause lengths between commands, subtitle display, and other configuration values. | "Adjust Talon's end-of-phrase timing and subtitle settings." |
 
 ## SuperWhisper skills
 
