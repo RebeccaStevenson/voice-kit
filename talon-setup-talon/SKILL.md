@@ -1,5 +1,5 @@
 ---
-name: setup-talon
+name: talon-setup-talon
 description: >
   Step-by-step Talon installation and setup for complete beginners on macOS.
   Use when the user asks to "install Talon", "set up Talon", "get started
@@ -25,7 +25,7 @@ cat ~/.talon/user/<user_repo>/.talon-assistant/profile.md
 
 If no profile exists, **always tell the user**: "Before we install Talon, let
 me set up a quick profile so I know how much detail to give you — especially
-around Git commands. This only takes a minute." Then invoke the **start**
+around Git commands. This only takes a minute." Then invoke the **talon-start**
 skill. The profile captures Talon, coding, and Git experience levels so this
 skill can adapt its explanations — for example, a user with zero Git
 experience needs every `git clone` command explained, while someone

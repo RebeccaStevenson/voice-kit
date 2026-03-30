@@ -1,5 +1,5 @@
 ---
-name: create-basic-command
+name: talon-create-basic-command
 description: >
   Create new Talon voice commands using .talon files. Use when the user asks
   to "create a voice command", "add a new command", "make a Talon command",
@@ -9,17 +9,17 @@ description: >
 
 # Creating Basic Talon Voice Commands
 
-Guide the user through writing `.talon` files to define voice commands. Assume the user has Talon and the community repo installed, and has a personal commands folder (if not, point them to the **setup-talon** and **create-custom-repo** skills first).
+Guide the user through writing `.talon` files to define voice commands. Assume the user has Talon and the community repo installed, and has a personal commands folder (if not, point them to the **talon-setup-talon** and **talon-create-custom-repo** skills first).
 
 Local workspace note: in Becky's environment, AI agents usually start in `~/.talon/`, but Talon-managed repos and profiles still live under `~/.talon/user/`.
 
 <!-- SYNC: This "Discover Repo & Load Profile" block is shared with
-     create-python-command, create-custom-repo, and setup-rango.
+     talon-create-python-command, talon-create-custom-repo, and talon-setup-rango.
      Keep all four copies in sync when editing. -->
 
 ## Discover Repo & Load Profile (FIRST STEP — do both before anything else)
 
-1. **Find the user's custom repo.** List `~/.talon/user/` and identify the folder that is NOT `community`, `rango-talon`, `cursorless-talon`, `parrot`, or any other well-known shared repo. The remaining folder is the user's personal repo (e.g., `talon_rebecca`, `talon_john`, `my_commands`, etc.).
+1. **Find the user's custom repo.** List `~/.talon/user/` and identify the folder that is NOT `community`, `rango-talon`, `cursorless-talon`, `parrot`, or any other well-known shared repo. The remaining folder is the user's personal repo (e.g., `talon-rebecca`, `talon-john`, `my-commands`, etc.).
 
    ```bash
    ls ~/.talon/user/
@@ -40,10 +40,10 @@ Local workspace note: in Becky's environment, AI agents usually start in `~/.tal
    - **None / Basic (Coding):** Avoid jargon; explain any concepts used.
    - **None (Git):** Don't include Git commands without explaining them.
 
-   If no profile exists, mention: "I don't see a profile yet — you can run the **start** skill to set one up, but we can keep going for now." Then default to intermediate-level explanations.
+   If no profile exists, mention: "I don't see a profile yet — you can run the **talon-start** skill to set one up, but we can keep going for now." Then default to intermediate-level explanations.
 
 <!-- SYNC: This "Search Before Creating" block is shared with
-     create-python-command. Keep both copies in sync when editing. -->
+     talon-create-python-command. Keep both copies in sync when editing. -->
 
 ## Search Before Creating (MANDATORY)
 
@@ -294,7 +294,7 @@ If the command is backed by Python actions, also verify the action registered:
 echo 'actions.find("your_action_name")' | ~/.talon/bin/repl
 ```
 
-For **complex commands** (multi-file changes, Python logic, file operations, context overrides), invoke the full **test-and-debug** skill to run the complete testing checklist including pytest where applicable.
+For **complex commands** (multi-file changes, Python logic, file operations, context overrides), invoke the full **talon-test-and-debug** skill to run the complete testing checklist including pytest where applicable.
 
 For **simple commands** (single `.talon` rule with a key press or insert), the `sim()` check plus a log check is sufficient.
 

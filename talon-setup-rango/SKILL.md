@@ -1,5 +1,5 @@
 ---
-name: setup-rango
+name: talon-setup-rango
 description: >
   Walk the user through installing and configuring Rango, the browser
   voice-control extension for Talon. Use when the user asks to "set up
@@ -14,12 +14,12 @@ Guide the user through installing the Rango browser extension and its Talon inte
 Local workspace note: in Becky's environment, AI agents usually start in `~/.talon/`, but Talon-managed repos and profiles still live under `~/.talon/user/`.
 
 <!-- SYNC: This "Discover Repo & Load Profile" block is shared with
-     create-basic-command, create-python-command, and create-custom-repo.
+     talon-create-basic-command, talon-create-python-command, and talon-create-custom-repo.
      Keep all four copies in sync when editing. -->
 
 ## Discover Repo & Load Profile (FIRST STEP — do both before anything else)
 
-1. **Find the user's custom repo.** List `~/.talon/user/` and identify the folder that is NOT `community`, `rango-talon`, `cursorless-talon`, `parrot`, or any other well-known shared repo. The remaining folder is the user's personal repo (e.g., `talon_rebecca`, `talon_john`, `my_commands`, etc.).
+1. **Find the user's custom repo.** List `~/.talon/user/` and identify the folder that is NOT `community`, `rango-talon`, `cursorless-talon`, `parrot`, or any other well-known shared repo. The remaining folder is the user's personal repo (e.g., `talon-rebecca`, `talon-john`, `my-commands`, etc.).
 
    ```bash
    ls ~/.talon/user/
@@ -40,7 +40,7 @@ Local workspace note: in Becky's environment, AI agents usually start in `~/.tal
    - **None / Basic (Coding):** Avoid jargon; explain any technical concepts used.
    - **None (Git):** Don't include Git commands without explaining them first.
 
-   If no profile exists, mention: "I don't see a profile yet — you can run the **start** skill to set one up, but we can keep going for now." Then default to intermediate-level explanations.
+   If no profile exists, mention: "I don't see a profile yet — you can run the **talon-start** skill to set one up, but we can keep going for now." Then default to intermediate-level explanations.
 
 ## Section 1 — Installation
 
@@ -183,7 +183,7 @@ Say `rango explicit` to switch to explicit clicking mode. You'll then say `click
 
 ### "I'd prefer number hints instead of letters"
 
-Add this line to a `.talon` file in your personal commands folder (e.g., `talon_yourname/rango_settings.talon`):
+Add this line to a `.talon` file in your personal commands folder (e.g., `talon-yourname/rango_settings.talon`):
 
 ```talon
 tag(): user.rango_number_hints

@@ -1,5 +1,5 @@
 ---
-name: test-and-debug
+name: talon-test-and-debug
 description: >
   Test and debug Talon voice commands using logs, the REPL, and pytest.
   Use when the user asks to "test my command", "debug a Talon command",
@@ -12,13 +12,13 @@ description: >
 
 Walk the user through a structured testing checklist. Follow these steps in order — each step catches a different class of problem, from syntax errors to runtime failures.
 
-**Note:** This skill is often invoked automatically after creating commands via the **create-basic-command** or **create-python-command** skills. When invoked that way, you already know which files were just created/edited — jump straight into the relevant checklist steps rather than asking the user what to test.
+**Note:** This skill is often invoked automatically after creating commands via the **talon-create-basic-command** or **talon-create-python-command** skills. When invoked that way, you already know which files were just created/edited — jump straight into the relevant checklist steps rather than asking the user what to test.
 
 Local workspace note: in Becky's environment, AI agents usually start in `~/.talon/`, but Talon-managed repos and profiles still live under `~/.talon/user/`.
 
 ## Read the User Profile
 
-Before starting, discover the user's custom repo name (see the **create-basic-command** skill for the full discovery step). Then check for a profile at `~/.talon/user/<user_repo>/.talon-assistant/profile.md`. If it exists, read it and adapt:
+Before starting, discover the user's custom repo name (see the **talon-create-basic-command** skill for the full discovery step). Then check for a profile at `~/.talon/user/<user_repo>/.talon-assistant/profile.md`. If it exists, read it and adapt:
 
 - **Beginner (Talon):** Explain what each testing step does and why. Walk through log output and REPL commands in detail.
 - **Intermediate (Talon):** Brief explanations; focus on results.

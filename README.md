@@ -1,39 +1,50 @@
 # Voice-Kit
 
-## Talon voice assistant
+## What this is
 
-- [talon-voice-assistant/](talon-voice-assistant/)
-- A collection of skills that guides new users through installing, configuring, and creating custom voice commands with [Talon](https://talonvoice.com/), hopefully making the process mostly hands off (i.e. the agent does pretty much everything for you). Beginner friendly, no coding experience required.
+Skills and resources for setting up and customizing:
+- powerful voice control software (Talon Voice)
+- dictation modes (e.g. email, prompting) and workflows using the dictation software Superwhisper
 
-## Superwhisper-assistant
+## Who this is for
 
-- [superwhisper-assistant/](superwhisper-assistant/)
-- Install, configure, and create custom dictation modes for SuperWhisper, the dictation app. Handles mode JSON files, voice/language model selection, prompt engineering for text formatting, and Talon integration.
+- Folks with repetitive strain injury (RSI) or other mobility impairments
+- People that want to not only talk to their agents using dictation software like Wispr Flow, but want to use voice to completely control their computer, setting up voice commands for everything from simple keyboard shortcuts to multi-step workflows.
+- Parents with their hands full of children
+- Total beginners with no coding experience, coding and voice control power users, everyone in between
+
+## What you can do with Voice Kit
+
+| Workflow | Example request |
+|---|---|
+| Install Talon and the community command set | "Help me install Talon on my Mac." |
+| Add browser voice control with Rango | "Set up Rango so I can control Chrome with my voice." |
+| Create simple Talon commands | "Make a voice command that opens my notes folder." |
+| Create Python-backed Talon actions | "Write a Talon action that transforms the selected text." |
+| Test and debug Talon commands | "My Talon command is not working. Help me debug it." |
+| Create or edit SuperWhisper modes | "Make a SuperWhisper mode for emailing." |
+| Tune dictation for prompting and structured writing | "Create a SuperWhisper mode for talking to coding agents." |
+| Future voice memo workflows | "Turn my voice memos into transcripts and action items." |
+
+## Talon-based skills
+
+| Skill | What it does | Example request |
+|---|---|---|
+| [talon-start/](talon-start/) | Creates a user profile so later Talon help can match the user’s experience level. | "Set up the Talon assistant for me." |
+| [talon-setup-talon/](talon-setup-talon/) | Walks a beginner through installing Talon, enabling speech recognition, and cloning the community repo. | "Help me get Talon running from scratch." |
+| [talon-setup-rango/](talon-setup-rango/) | Adds Rango so the browser can be controlled by voice. | "Set up browser voice control with Rango." |
+| [talon-create-custom-repo/](talon-create-custom-repo/) | Creates a personal Talon repo so custom commands stay separate from upstream repos. | "Set up my own Talon commands folder." |
+| [talon-create-basic-command/](talon-create-basic-command/) | Creates `.talon` commands for shortcuts, text insertion, and app-specific actions. | "Make a command that pastes my email signature." |
+| [talon-create-python-command/](talon-create-python-command/) | Builds more advanced Talon commands with Python logic and reusable actions. | "Create a Talon action that cleans up selected text." |
+| [talon-test-and-debug/](talon-test-and-debug/) | Checks logs, REPL output, and tests so broken commands can be diagnosed quickly. | "This command loads but never triggers. Debug it." |
+
+## SuperWhisper skills
+
+| Skill | What it does | Example request |
+|---|---|---|
+| [superwhisper-assistant/](superwhisper-assistant/) | Installs SuperWhisper, configures models, and creates or edits custom mode JSON files. | "Create a SuperWhisper mode for editing emails." |
+| `voice-memo-transcriber` | Planned skill for turning voice memos into transcripts, summaries, and action items. | "Transcribe my latest voice memos and pull out tasks." |
 
 ## Resource links
 
-### Full computer control (voice as keyboard + mouse)
-
-- **[Talon Voice](https://talonvoice.com)** — hands-free keyboard/mouse replacement via voice, noise commands (pop/hiss), optional eye tracking; Python-scriptable; Mac, Windows, Linux; local Conformer engine (no audio sent to the cloud); extremely fast and reliable
-  - **[Talon Community Wiki](https://talon.wiki)** — setup, voice coding, Slack community
-  - [Talon voice assistant skills](talon-voice-assistant/skills/) — local setup, command-creation, debugging, and Rango skills
-- **[Apple Voice Control for Mac](https://support.apple.com/en-us/HT203085)** — built-in hands-free control for macOS with spoken commands, overlays, custom commands, and dictation on device
-
-### Voice dictation (speech-to-text)
-
-- **[Wispr Flow](https://wisprflow.ai)** — AI dictation across apps on Mac, Windows, iOS, and Android; 100+ languages; free tier available, paid from $12/month
-- **[Superwhisper](https://superwhisper.com)** — AI voice-to-text for macOS, Windows, iPhone, and iPad; customizable modes; local and cloud models; free tier available, paid from $8.49/month
-  - [`superwhisper-assistant` skill](superwhisper-assistant/) — skill files and references for creating custom dictation modes
-- **[Dragon](https://www.nuance.com/dragon.html)** — long-standing dictation product (Windows-focused today); still good for editing text especially in Microsoft Word
-
-### iOS control
-
-- **[Apple Voice Control for iPhone and iPad](https://support.apple.com/en-us/111778)** — hands-free control on iPhone/iPad with spoken commands, overlays, custom commands, and on-device recognition after setup
-- **[Siri](https://support.apple.com/guide/iphone/use-siri-iph83aad8922/ios)** — voice assistant for launching apps, dictating messages, timers, smart home, and more
-- **[Shortcuts](https://support.apple.com/guide/shortcuts/welcome/ios)** — automate sequences (open apps, text, Home actions) and run them from the app, widgets, or Siri
-
-### Whisper-based (OpenAI Whisper and clients)
-
-- **[OpenAI Whisper](https://github.com/openai/whisper)** — open-source speech-to-text model; used by many apps and scripts; run locally or via APIs depending on integration
-- **[MacWhisper](https://macwhisper.com/)** — Mac app for Whisper-based transcription, recording, file export, and optional system-wide dictation; also available on iPhone/iPad; free tier available, paid from EUR59 one-time
-
+See [resource-links.md](resource-links.md) for the full list.

@@ -1,5 +1,5 @@
 ---
-name: create-python-command
+name: talon-create-python-command
 description: >
   Create Talon voice commands with Python scripting for advanced logic.
   Use when the user asks to "create a Python command", "add Python to
@@ -16,12 +16,12 @@ Guide the user through combining `.talon` and `.py` files to build commands with
 Local workspace note: in Becky's environment, AI agents usually start in `~/.talon/`, but Talon-managed repos and profiles still live under `~/.talon/user/`.
 
 <!-- SYNC: This "Discover Repo & Load Profile" block is shared with
-     create-basic-command, create-custom-repo, and setup-rango.
+     talon-create-basic-command, talon-create-custom-repo, and talon-setup-rango.
      Keep all four copies in sync when editing. -->
 
 ## Discover Repo & Load Profile (FIRST STEP — do both before anything else)
 
-1. **Find the user's custom repo.** List `~/.talon/user/` and identify the folder that is NOT `community`, `rango-talon`, `cursorless-talon`, `parrot`, or any other well-known shared repo. The remaining folder is the user's personal repo (e.g., `talon_rebecca`, `talon_john`, `my_commands`, etc.).
+1. **Find the user's custom repo.** List `~/.talon/user/` and identify the folder that is NOT `community`, `rango-talon`, `cursorless-talon`, `parrot`, or any other well-known shared repo. The remaining folder is the user's personal repo (e.g., `talon-rebecca`, `talon-john`, `my-commands`, etc.).
 
    ```bash
    ls ~/.talon/user/
@@ -43,10 +43,10 @@ Local workspace note: in Becky's environment, AI agents usually start in `~/.tal
    - **Comfortable+ (Coding):** Use standard programming terminology freely.
    - **None (Git):** Don't include Git commands without explaining them.
 
-   If no profile exists, mention: "I don't see a profile yet — you can run the **start** skill to set one up, but we can keep going for now." Then default to intermediate-level explanations.
+   If no profile exists, mention: "I don't see a profile yet — you can run the **talon-start** skill to set one up, but we can keep going for now." Then default to intermediate-level explanations.
 
 <!-- SYNC: This "Search Before Creating" block is shared with
-     create-basic-command. Keep both copies in sync when editing. -->
+     talon-create-basic-command. Keep both copies in sync when editing. -->
 
 ## Search Before Creating (MANDATORY)
 
@@ -127,7 +127,7 @@ Explain to the user that basic commands (keyboard shortcuts, typing text) need o
 The standard pattern is two files in the same folder:
 
 ```
-talon_yourname/
+talon-yourname/
 ├── my_feature.talon    # Defines the voice commands (what you say)
 └── my_feature.py       # Implements the actions (what happens)
 ```
@@ -312,7 +312,7 @@ def _notify_break():
 
 ## After Writing the Command (MANDATORY)
 
-After creating or editing any Python-backed command, you MUST verify it works. Since Python commands are inherently more complex, always invoke the **test-and-debug** skill to run the full testing checklist:
+After creating or editing any Python-backed command, you MUST verify it works. Since Python commands are inherently more complex, always invoke the **talon-test-and-debug** skill to run the full testing checklist:
 
 1. **Check the log** for import errors or `ActionProtoError`
 2. **Verify action registration** via `actions.find()`
@@ -358,4 +358,4 @@ This format helps the user quickly see what they can say and where the files liv
 - Use `actions.user.*` (not direct key presses) when calling other community actions so context overrides work.
 - Reuse existing community actions and helpers wherever possible instead of reimplementing from scratch.
 - Format code with `black` for consistency.
-- Write pytest tests for any non-trivial logic (see the **test-and-debug** skill).
+- Write pytest tests for any non-trivial logic (see the **talon-test-and-debug** skill).

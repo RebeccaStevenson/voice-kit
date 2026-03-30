@@ -1,5 +1,5 @@
 ---
-name: create-custom-repo
+name: talon-create-custom-repo
 description: >
   Create a personal repository for custom Talon voice commands, separate
   from the community repo. Use when the user asks to "create a custom
@@ -15,7 +15,7 @@ Guide the user through creating their own command repository that sits alongside
 Local workspace note: in Becky's environment, AI agents usually start in `~/.talon/`, but Talon-managed repos and profiles still live under `~/.talon/user/`.
 
 <!-- SYNC: This "Discover Repo & Load Profile" block is shared with
-     create-basic-command, create-python-command, and setup-rango.
+     talon-create-basic-command, talon-create-python-command, and talon-setup-rango.
      Keep all four copies in sync when editing. -->
 
 ## Discover Repo & Load Profile (FIRST STEP — do both before anything else)
@@ -43,7 +43,7 @@ Before creating a new repo, check whether the user already has one and whether a
    - **None / Basic (Coding):** Avoid jargon; explain Git and terminal concepts used.
    - **None (Git):** Explain every Git command before running it. Offer to run them for the user.
 
-   If no profile exists, mention: "I don't see a profile yet — you can run the **start** skill to set one up, but we can keep going for now." Then default to intermediate-level explanations.
+   If no profile exists, mention: "I don't see a profile yet — you can run the **talon-start** skill to set one up, but we can keep going for now." Then default to intermediate-level explanations.
 
 ## Why a Separate Repo?
 
@@ -55,7 +55,7 @@ Explain to the user in plain language:
 ## Step 1: Choose a Name
 
 Ask the user what they'd like to name their custom commands folder using AskUserQuestion. Suggest a pattern like `talon_<firstname>` or `my_talon`. The name should be:
-- Lowercase with underscores (e.g., `talon_alex`)
+- Lowercase with hyphens (e.g., `talon-alex`)
 - Different from existing folders (`community`, `rango-talon`, `cursorless-talon`)
 
 ## Step 2: Create the Directory Structure
@@ -148,4 +148,4 @@ Share these with the user:
 
 ## Adding Commands Later
 
-After initial setup, point the user to the **create-basic-command** or **create-python-command** skills for guidance on writing new commands. The test-and-debug skill covers how to verify commands work correctly.
+After initial setup, point the user to the **talon-create-basic-command** or **talon-create-python-command** skills for guidance on writing new commands. The talon-test-and-debug skill covers how to verify commands work correctly.

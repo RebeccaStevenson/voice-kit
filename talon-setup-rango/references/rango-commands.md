@@ -272,7 +272,7 @@ These tags can be set in a `.talon` file to change Rango's default behavior:
 | `user.rango_exclude_singles` | Hide single-letter hints to reduce accidental clicks |
 | `user.rango_disabled` | Disable all Rango commands |
 
-Example — put this in a file like `talon_yourname/rango_settings.talon`:
+Example — put this in a file like `talon-yourname/rango_settings.talon`:
 
 ```talon
 # Use number hints and exclude singles

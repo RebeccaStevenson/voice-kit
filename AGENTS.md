@@ -4,7 +4,7 @@
 
 A toolkit for voice control beginners containing:
 
-- **talon-voice-assistant/** — Claude Code plugin with 7 skills that walk users through installing and customising Talon voice control
+- `talon-start/`, `talon-setup-talon/`, `talon-setup-rango/`, `talon-create-custom-repo/`, `talon-create-basic-command/`, `talon-create-python-command/`, and `talon-test-and-debug/` — root-level Talon skills that walk users through installing and customising Talon voice control
 - **superwhisper-assistant/** — standalone skill for configuring SuperWhisper dictation modes
 
 ## Repo Structure
@@ -15,12 +15,28 @@ voice-kit/
 ├── CLAUDE.md                  ← points here
 ├── LICENSE                    ← MIT
 ├── README.md                  ← public-facing overview
-├── talon-voice-assistant/
-│   ├── .claude-plugin/plugin.json
-│   ├── README.md
-│   ├── skills/<skill>/SKILL.md
-│   ├── skills/<skill>/references/*.md
-│   └── resources/talon-training.html
+├── resources/
+│   └── talon-training.html    ← training page
+├── talon-start/
+│   └── SKILL.md
+├── talon-setup-talon/
+│   ├── SKILL.md
+│   └── references/*.md
+├── talon-setup-rango/
+│   ├── SKILL.md
+│   └── references/*.md
+├── talon-create-custom-repo/
+│   ├── SKILL.md
+│   └── references/*.md
+├── talon-create-basic-command/
+│   ├── SKILL.md
+│   └── references/*.md
+├── talon-create-python-command/
+│   ├── SKILL.md
+│   └── references/*.md
+├── talon-test-and-debug/
+│   ├── SKILL.md
+│   └── references/*.md
 └── superwhisper-assistant/
     ├── SKILL.md
     └── references/mode-schema.md
@@ -28,7 +44,7 @@ voice-kit/
 
 ## Skill File Conventions
 
-Each skill lives in its own directory under `skills/` (plugin) or at the top level (standalone skill).
+Each skill lives in its own directory at the top level.
 
 - **SKILL.md** — the skill definition. Must include YAML frontmatter with `name` and `description` fields.
 - **references/** — optional supporting docs read by the skill at runtime.
@@ -43,7 +59,7 @@ Each skill lives in its own directory under `skills/` (plugin) or at the top lev
 
 ## What Not to Modify
 
-- Do not edit files inside `talon-voice-assistant/resources/` without being asked — the training page is hand-authored HTML.
+- Do not edit `resources/talon-training.html` unless the task specifically calls for changing the training page.
 - Do not change SKILL.md frontmatter `name` fields — other systems reference them.
 - Do not add dependencies or build tooling unless requested. This is a documentation-only repo (Markdown + one HTML file).
 
@@ -58,10 +74,10 @@ When editing a SKILL.md:
 
 ## Adding a New Skill
 
-1. Create `skills/<skill-name>/SKILL.md` with frontmatter.
+1. Create `<skill-name>/SKILL.md` with frontmatter.
 2. Add a reference doc in `references/` if the skill needs factual lookup material.
-3. Update the skill table in `talon-voice-assistant/README.md`.
-4. If the skill has prerequisites, document them and add it to the dependency diagram in the start skill's generated CLAUDE.md.
+3. Update the skill table in `README.md`.
+4. If the skill has prerequisites, document them and add it to the dependency diagram in the `talon-start` skill's generated `CLAUDE.md`.
 
 ## License
 

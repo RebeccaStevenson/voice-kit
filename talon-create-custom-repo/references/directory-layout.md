@@ -13,7 +13,7 @@ In Becky's local setup, `~/.talon/` is the AI-agent workspace root, and `~/.talo
     ├── rango-talon/            # Upstream: david-tejada/rango-talon (read-only)
     ├── cursorless-talon/       # Upstream: cursorless-dev (read-only, optional)
     ├── talon-ai-tools/         # Upstream: AI integrations (read-only, optional)
-    ├── talon_yourname/         # YOUR custom commands (this is what you edit)
+    ├── talon-yourname/         # YOUR custom commands (this is what you edit)
     │   ├── apps/               # App-specific commands
     │   │   ├── chrome_custom.talon
     │   │   └── vscode_custom.talon
@@ -35,7 +35,7 @@ In Becky's local setup, `~/.talon/` is the AI-agent workspace root, and `~/.talo
 
 ## Key Rules
 
-1. **Only edit files inside your personal folder** (`user/talon_yourname/` from the workspace root).
+1. **Only edit files inside your personal folder** (`user/talon-yourname/` from the workspace root).
 2. **Everything else is upstream** — pull updates with `git pull` inside each upstream folder.
 3. **Talon loads all folders recursively** — any `.talon` or `.py` file anywhere under `~/.talon/user/` is active.
 4. **File and folder names don't matter to Talon** — organize however makes sense to you. Talon uses context headers (not file paths) to decide when commands are active.
@@ -44,7 +44,7 @@ In Becky's local setup, `~/.talon/` is the AI-agent workspace root, and `~/.talo
 
 Modern Talon setups often use a mix of `.talon-list` files and CSV files:
 
-1. For personal vocabulary, websites, search engines, and system paths, create list files in `user/talon_yourname/settings/` such as:
+1. For personal vocabulary, websites, search engines, and system paths, create list files in `user/talon-yourname/settings/` such as:
    - `vocabulary.talon-list`
    - `websites.talon-list`
    - `search_engines.talon-list`
@@ -64,7 +64,7 @@ Modern Talon setups often use a mix of `.talon-list` files and CSV files:
 Do **not** treat community CSV files as the source of truth for personal paths. Instead, create a local-only talon-list file:
 
 ```
-user/talon_yourname/settings/system_paths-mac.lan.talon-list
+user/talon-yourname/settings/system_paths-mac.lan.talon-list
 ```
 
 This pattern is gitignored so personal paths stay off GitHub.
