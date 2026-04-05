@@ -14,9 +14,45 @@ Initialize the assistant by discovering the user's environment and interviewing
 them about their experience level. This creates a persistent profile that all
 other skills read to adapt their explanations and tone.
 
-Local workspace note: in Becky's environment, AI agents usually start in `~/.talon/`, but Talon-managed repos and profiles still live under `~/.talon/user/`.
+**Prerequisite:** Requires Claude Code (not Cowork). Step 0 ensures
+`~/.talon/` exists and resolves its absolute path — Claude Code can be
+launched from any directory.
+
+## Important: Designed for Claude Code
+
+This skill (and all voice-kit skills) is designed for **Claude Code** — the
+CLI / desktop app that runs directly on the user's machine. It will NOT work
+correctly in Claude Cowork or any sandboxed environment, because the skills
+need direct filesystem access to `~/.talon/` and the Talon REPL at
+`~/.talon/bin/repl`.
 
 ## Instructions
+
+### 0. Ensure ~/.talon/ Exists (do this before anything else)
+
+All Talon files live under `~/.talon/`. Before proceeding, make sure it
+exists and resolve its absolute path for use in all later commands:
+
+```bash
+TALON_HOME="$HOME/.talon"
+mkdir -p "$TALON_HOME"
+echo "$TALON_HOME"
+```
+
+Store this absolute path (e.g., `/Users/alex/.talon`) and use it as a prefix
+for **every file operation and command** in this skill. Do not rely on the
+current working directory — Claude Code may have been launched from anywhere.
+
+**Use absolute paths everywhere.** For example:
+- `$TALON_HOME/user/` instead of `user/` or `~/.talon/user/`
+- `$TALON_HOME/bin/repl` for the REPL
+- `$TALON_HOME/talon.log` for the log
+
+If Claude Code was launched outside `~/.talon/`, briefly note:
+> "You started Claude outside `~/.talon/`, so I'll use absolute paths to
+> access your Talon setup — everything will work fine."
+
+Then continue — do **not** ask the user to restart or relaunch.
 
 ### 1. Check What Exists
 
@@ -32,52 +68,52 @@ Identify the user's custom repo (the folder that is NOT `community`,
 repo). Then check for:
 
 ```bash
-ls ~/.talon/user/<user_repo>/.talon-assistant/
+ls ~/.talon/talon-assistant/
 ```
 
-If `.talon-assistant/profile.md` already exists, read it, greet the user by
+If `talon-assistant/profile.md` already exists, read it, greet the user by
 name, and show a brief status summary instead of re-running the interview.
 Then stop — setup is already done.
 
 ### 2. Create the Directory
 
 ```bash
-mkdir -p ~/.talon/user/<user_repo>/.talon-assistant
+mkdir -p ~/.talon/talon-assistant
 ```
 
 ### 3. Run the Proficiency Interview
 
-Use **AskUserQuestion** to gather the user's background. Ask all questions in
-a single call so the user only has to answer once.
+Gather the user's background in **one message, not four**. Present all
+questions together so the user answers once. If you already know some answers
+(e.g., their name from git config, or info mentioned in conversation),
+pre-fill those and only ask what's missing.
 
-**Question 1 — Talon experience:**
+Use **AskUserQuestion** with a single prompt like this:
 
-> How much experience do you have with Talon voice control?
+> I need a few quick details to set up your profile. You can answer all at
+> once or one at a time:
+>
+> 1. **Your name** (what should I call you?)
+> 2. **Talon experience:** Beginner / Intermediate / Advanced
+> 3. **Coding experience:** None / Basic / Comfortable / Experienced
+> 4. **Git experience:** None / Basic / Comfortable
+> 5. **Learning depth** — How much do you want to learn about how Talon
+>    actually works (its file structure, syntax, and the engine behind the
+>    scenes)?
+>    - **Just make it work** — Give me working commands; I don't need to know how the sausage is made
+>    - **Brief context** — A sentence or two about what's happening under the hood is nice, but keep it short
+>    - **Teach me as we go** — Explain the syntax and structure as it comes up naturally while we build things
+>    - **Deep dive** — I want to really understand how Talon works — show me the internals, the file anatomy, the API
 
-- **Beginner** — Just installed or still learning the basics (alphabet, basic navigation)
-- **Intermediate** — Comfortable with everyday commands; have customized some things
-- **Advanced** — Write my own commands regularly; familiar with the Talon API, contexts, and modules
+Provide brief descriptions only if the user asks for clarification:
+- Talon Beginner = just installed or learning basics; Intermediate = use daily, customized some things; Advanced = write own commands, know the API
+- Coding None = don't code; Basic = can read/edit simple scripts; Comfortable = write code regularly; Experienced = coding is core to my work
+- Git None = don't know what it is; Basic = know clone/pull/commit; Comfortable = branches, PRs, conflicts
 
-**Question 2 — Coding experience:**
-
-> How comfortable are you with programming / writing code?
-
-- **None** — I don't code
-- **Basic** — I can read simple scripts and make small edits
-- **Comfortable** — I write code regularly in at least one language
-- **Experienced** — Coding is a major part of my work
-
-**Question 3 — Git experience:**
-
-> How familiar are you with Git (version control)?
-
-- **None** — I don't know what Git is
-- **Basic** — I know clone, pull, and commit
-- **Comfortable** — I use branches, PRs, and resolve conflicts
-
-Also ask for their **name** (so the assistant can greet them in future
-sessions) using a simple text question, or infer it from the conversation if
-already known.
+**Pre-fill what you can:** Check `git config user.name` and
+`git config user.email` for the user's name. If you find it, say "I see your
+name is \<name\> from your computer's settings — should I use that?" rather
+than making them type it.
 
 **Note on Git:** This plugin always uses Git for cloning repos and tracking
 changes locally. A **GitHub account is not required** — Git works entirely on
@@ -90,7 +126,7 @@ macOS: typing `git` in Terminal prompts Xcode Command Line Tools).
 
 Once the interview answers are in, immediately write the profile file — don't
 defer this or say "I'll create it later." Use the Write tool right now to
-create `~/.talon/user/<user_repo>/.talon-assistant/profile.md`:
+create `~/.talon/talon-assistant/profile.md`:
 
 ```markdown
 # Talon Assistant Profile
@@ -106,6 +142,7 @@ create `~/.talon/user/<user_repo>/.talon-assistant/profile.md`:
 | Talon | beginner / intermediate / advanced |
 | Coding | none / basic / comfortable / experienced |
 | Git | none / basic / comfortable |
+| Learning depth | just-make-it-work / brief-context / teach-me / deep-dive |
 
 ## Preferences
 <!-- Add user preferences as they come up in conversation -->
@@ -114,7 +151,7 @@ create `~/.talon/user/<user_repo>/.talon-assistant/profile.md`:
 ### 5. Create the Memory File (DO NOT SKIP)
 
 Immediately after the profile, also write the memory file. Use the Write tool
-to create `~/.talon/user/<user_repo>/.talon-assistant/memory.md`:
+to create `~/.talon/talon-assistant/memory.md`:
 
 ```markdown
 # Talon Assistant Memory
@@ -140,7 +177,7 @@ Persistent context that the assistant learns over time.
 Immediately after the memory file, write a `CLAUDE.md` to the assistant
 directory so that **every future agent session** has the context it needs
 without re-reading every skill file. Use the Write tool to create
-`~/.talon/user/<user_repo>/.talon-assistant/CLAUDE.md`:
+`~/.talon/talon-assistant/CLAUDE.md`:
 
 ````markdown
 # Talon Voice Assistant — Agent Context
@@ -152,9 +189,9 @@ without re-reading every skill file. Use the Write tool to create
 
 - **Name:** <name>
 - **Custom repo:** <user_repo>
-- **Proficiency:** Talon <level> · Coding <level> · Git <level>
-- **Profile file:** `<user_repo>/.talon-assistant/profile.md`
-- **Memory file:** `<user_repo>/.talon-assistant/memory.md`
+- **Proficiency:** Talon <level> · Coding <level> · Git <level> · Learning depth <level>
+- **Profile file:** `~/.talon/talon-assistant/profile.md`
+- **Memory file:** `~/.talon/talon-assistant/memory.md`
 
 ## Environment
 
@@ -178,8 +215,8 @@ commands.
 ### talon-start
 **Purpose:** Create the user profile and initialize the assistant.
 **When to use:** First-time setup, or when the user says "update my profile."
-**Creates:** `.talon-assistant/profile.md`, `.talon-assistant/memory.md`,
-`.talon-assistant/CLAUDE.md` (this file).
+**Creates:** `talon-assistant/profile.md`, `talon-assistant/memory.md`,
+`talon-assistant/CLAUDE.md` (this file).
 
 ### talon-setup-talon
 **Purpose:** Step-by-step Talon installation and community command setup.
@@ -267,7 +304,7 @@ grouped by category.
    5-step talon-test-and-debug checklist.
 4. **Never edit upstream repos** — all custom work belongs in `<user_repo>/`.
 5. **Update memory.md** — after creating commands, log them in
-   `.talon-assistant/memory.md` (voice phrase, file path, date).
+   `talon-assistant/memory.md` (voice phrase, file path, date).
 6. **Same quality for all levels** — proficiency only changes explanation
    depth and tone, never the quality of commands or file structure.
 
@@ -282,6 +319,10 @@ grouped by category.
 | Coding comfortable+ | Use standard programming terminology freely |
 | Git none | Explain every git command, offer to run them for the user |
 | Git basic+ | Include git commands normally |
+| Learning: just-make-it-work | Don't explain file structure, syntax rules, or how Talon processes commands — just produce working files |
+| Learning: brief-context | Add a sentence or two about *what* a file or syntax element does, but no deep explanation |
+| Learning: teach-me | When introducing new syntax or file types, explain the structure and why it works that way, woven into the workflow |
+| Learning: deep-dive | Proactively teach Talon internals — file anatomy, context matching, action resolution, module/tag system — even when the user hasn't asked |
 
 ## Skill Dependency Order
 
@@ -324,9 +365,9 @@ is the last thing the user sees — make it clear and complete:
 ```
 All set, <name>! Here's your profile:
 
-- **Talon:** <level>  —  **Coding:** <level>  —  **Git:** <level>
+- **Talon:** <level>  —  **Coding:** <level>  —  **Git:** <level>  —  **Learning depth:** <level>
 - **Custom repo:** <user_repo>
-- **Profile saved to:** ~/.talon/user/<user_repo>/.talon-assistant/
+- **Profile saved to:** ~/.talon/talon-assistant/
 
 Three files were created:
   • profile.md — your proficiency levels and preferences
@@ -357,9 +398,20 @@ You don't have to do them all at once — feel free to jump ahead if you want
 to try something specific. But this order works well because each skill
 builds on what the previous one taught you.
 
-Then ask: "Would you like to continue with installing Talon and the community
-commands?" If yes, invoke the **talon-setup-talon** skill — it will read the
-profile you just created and adapt accordingly.
+### Resume Interrupted Flow
+
+If the user was in the middle of another skill (e.g., `create-basic-command`)
+and pivoted to `/start` to create their profile, **don't just suggest the
+learning path** — acknowledge what they were doing and offer to resume it
+automatically. For example: "You were creating a voice command before we
+set up your profile — would you like to continue with that?" If yes,
+invoke the appropriate skill directly rather than making the user re-type
+the slash command.
+
+If this is a fresh session with no prior context, then suggest the standard
+learning path and ask: "Would you like to continue with installing Talon and
+the community commands?" If yes, invoke the **talon-setup-talon** skill —
+it will read the profile you just created and adapt accordingly.
 
 ---
 
@@ -367,7 +419,7 @@ profile you just created and adapt accordingly.
 
 Every skill in this plugin should, as an early step:
 
-1. Read `~/.talon/user/<user_repo>/.talon-assistant/profile.md`
+1. Read `~/.talon/talon-assistant/profile.md`
 2. Adapt **tone and detail level** based on what it finds:
 
 | Proficiency | How to adapt |
@@ -379,6 +431,10 @@ Every skill in this plugin should, as an early step:
 | **Comfortable+ (Coding)** | Use standard programming terminology freely. |
 | **None (Git)** | Never include Git commands in your instructions without explaining them. Offer to run them for the user. |
 | **Basic+ (Git)** | Include Git commands normally. |
+| **Just make it work (Learning)** | Produce working files without explaining Talon's structure or syntax rules. |
+| **Brief context (Learning)** | Add a line or two about what a syntax element or file does — enough for orientation, not a lesson. |
+| **Teach me (Learning)** | Explain syntax, file structure, and how Talon processes commands as they come up naturally in the workflow. |
+| **Deep dive (Learning)** | Proactively teach Talon internals — context matching, action resolution, the module/tag system, file anatomy — even when the user didn't explicitly ask. |
 
 ### Git and GitHub
 

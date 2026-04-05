@@ -163,6 +163,7 @@ These are commonly populated by `.talon-list` files, with a few settings still u
 |---|---|
 | `{user.website}` | `settings/websites.talon-list` |
 | `{user.search_engine}` | `settings/search_engines.talon-list` |
+| `{user.system_paths}` | `settings/system_paths-<hostname>.talon-list` (local-only, gitignored) |
 | `{user.vocabulary}` | `core/vocabulary/vocabulary.talon-list` plus personal `settings/vocabulary.talon-list` additions |
 | `{user.word_map}` | `settings/words_to_replace.csv` |
 | `{user.application}` | Auto-detected running apps |

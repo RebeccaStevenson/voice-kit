@@ -22,6 +22,38 @@ Skills and resources for setting up and customizing voice control (Talon Voice) 
 | Test and debug Talon commands | "My Talon command is not working. Help me debug it." |
 | Create or edit SuperWhisper modes | "Make a SuperWhisper mode for email with the following specifications..." |
 
+## Install
+
+For agents that support project-local skills, clone this repo and copy the skill folders into `.agents/skills`:
+
+```bash
+mkdir -p .agents/skills && \
+tmpdir="$(mktemp -d)" && \
+git clone --single-branch --depth 1 https://github.com/RebeccaStevenson/voice-kit.git "$tmpdir/voice-kit" && \
+cp -R "$tmpdir/voice-kit"/talon-* "$tmpdir/voice-kit"/superwhisper-assistant .agents/skills/ && \
+rm -rf "$tmpdir"
+```
+
+This copies the actual skill directories into `.agents/skills` so the agent sees each skill as a direct child directory with its own `SKILL.md`.
+
+Then add a short note to your `AGENTS.md` telling the agent to use these skills for Talon Voice and SuperWhisper tasks. For example:
+
+```md
+## Voice-Kit skills
+
+Use the skills in `.agents/skills/` for Talon Voice and SuperWhisper tasks:
+- `talon-start`
+- `talon-setup-talon`
+- `talon-setup-rango`
+- `talon-create-custom-repo`
+- `talon-create-basic-command`
+- `talon-create-python-command`
+- `talon-test-and-debug`
+- `superwhisper-assistant`
+```
+
+After installing, restart your agent so it reloads the skill list.
+
 ## Voice control skills
 
 | Skill | What it does | Example request |

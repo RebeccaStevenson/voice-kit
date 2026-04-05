@@ -11,7 +11,10 @@ description: >
 
 Guide the user through writing `.talon` files to define voice commands. Assume the user has Talon and the community repo installed, and has a personal commands folder (if not, point them to the **talon-setup-talon** and **talon-create-custom-repo** skills first).
 
-Local workspace note: in Becky's environment, AI agents usually start in `~/.talon/`, but Talon-managed repos and profiles still live under `~/.talon/user/`.
+**Prerequisite:** Requires Claude Code (not Cowork) for filesystem and REPL
+access. Use absolute paths (`$HOME/.talon/user/...`, `$HOME/.talon/bin/repl`)
+for all file operations and commands. Claude Code can be launched from any
+directory — do not ask the user to relaunch.
 
 <!-- SYNC: This "Discover Repo & Load Profile" block is shared with
      talon-create-python-command, talon-create-custom-repo, and talon-setup-rango.
@@ -30,7 +33,7 @@ Local workspace note: in Becky's environment, AI agents usually start in `~/.tal
 2. **Load the profile.** Immediately after discovering the repo, read the profile:
 
    ```bash
-   cat ~/.talon/user/<user_repo>/.talon-assistant/profile.md
+   cat ~/.talon/talon-assistant/profile.md
    ```
 
    If the file exists, adapt your explanations for the rest of this session:
@@ -40,7 +43,13 @@ Local workspace note: in Becky's environment, AI agents usually start in `~/.tal
    - **None / Basic (Coding):** Avoid jargon; explain any concepts used.
    - **None (Git):** Don't include Git commands without explaining them.
 
-   If no profile exists, mention: "I don't see a profile yet — you can run the **talon-start** skill to set one up, but we can keep going for now." Then default to intermediate-level explanations.
+   If no profile exists, offer to run setup quickly: "I don't see a profile
+   yet — would you like me to set one up real quick? It's just a few
+   questions and helps me tailor my explanations. Or we can skip it and keep
+   going." If the user says yes, invoke **talon-start** — and when it
+   finishes, resume this skill automatically (don't make the user re-invoke
+   `/create-basic-command`). If they decline, default to beginner-level
+   explanations to be safe.
 
 <!-- SYNC: This "Search Before Creating" block is shared with
      talon-create-python-command. Keep both copies in sync when editing. -->
@@ -74,11 +83,29 @@ Explicitly name both repos so the user can see at a glance that you checked ever
 
 ## Gathering Requirements
 
-Before writing any file, ask the user with AskUserQuestion:
+If the user already described what they want (e.g., "I want to say X and
+have it do Y"), **don't re-ask** — you have the spec, proceed to searching
+and writing. Only ask clarifying questions when the request is ambiguous.
 
-1. **What should the voice command do?** (e.g., press a keyboard shortcut, type text, open an app)
-2. **Should it work everywhere or only in a specific app?** (e.g., only in Chrome, only in VS Code)
-3. **What phrase should trigger it?** Suggest object-verb phrasing (e.g., `file save` not `save file`).
+When you do need more information, ask in **one message** (not three
+separate turns):
+
+> I need a few details:
+> 1. **What should it do?** (e.g., press a shortcut, type text, open an app)
+> 2. **Where should it work?** Everywhere, or only in a specific app?
+> 3. **What phrase triggers it?** (I'll suggest one if you're not sure)
+
+Suggest object-verb phrasing (e.g., `file save` not `save file`).
+
+## Prefer Simplicity — Stay in .talon When Possible
+
+Before escalating to `talon-create-python-command`, exhaust what pure
+`.talon` can do. Many requests that seem to need Python can be handled with
+built-in actions, `user.system_command_nb()`, key sequences, or captures.
+Only recommend the Python skill when the command genuinely needs conditional
+logic, loops, data processing, or API calls. Especially for beginners with
+no coding experience, keeping things in a single `.talon` file avoids the
+cognitive overhead of paired `.py` + `.talon` files.
 
 ## File Placement
 
@@ -265,6 +292,34 @@ open {user.website}:
 
 See `references/syntax-guide.md` for the full list of available captures and lists.
 
+### Verify List Dependencies Before Writing
+
+If your command uses a `{user.*}` list (e.g., `{user.system_paths}`,
+`{user.website}`), **check that the list file actually exists** before
+writing the command. Don't tell the user "it will be auto-generated later"
+— that leads to a broken command with no clear fix.
+
+```bash
+# Example: check if system_paths exists anywhere
+find ~/.talon/user/ -name "system_paths*" -type f
+```
+
+If the file doesn't exist, **create a starter list file** in the user's
+custom repo so the command works immediately:
+
+```
+# Example: ~/.talon/user/<user_repo>/settings/system_paths-<hostname>.talon-list
+list: user.system_paths
+-
+desktop: ~/Desktop
+documents: ~/Documents
+downloads: ~/Downloads
+```
+
+Get the hostname with `hostname` and use it in the filename. For
+`system_paths`, the file is gitignored by convention (local machine paths
+shouldn't be committed). Tell the user how to add their own entries.
+
 ## Overriding Existing Commands
 
 To change an existing community command without editing upstream files, create a new `.talon` file with a **more specific** context header:
@@ -280,23 +335,39 @@ touch:
 
 A context with more rules (e.g., adding `os: mac` or `mode: command`) takes precedence over one with fewer rules.
 
+## Auto-Escalate to Python When Needed
+
+If, during requirements gathering or search, you determine the command
+genuinely needs Python (conditional logic, loops, data processing, API
+calls, dynamic lists, or anything beyond what pure `.talon` can handle),
+**don't ask the user whether to switch** — just tell them "This one needs
+a bit of Python, so I'll use the Python command skill" and immediately
+invoke the **talon-create-python-command** skill. That skill will handle
+the rest, including automatic testing.
+
 ## After Writing the Command (MANDATORY)
 
-After creating or editing any command, you MUST verify it registers correctly. At minimum, use `sim()` via the REPL to confirm Talon recognizes the voice phrase:
+After creating or editing any command, you MUST verify it registers
+correctly. Run these checks yourself — don't ask the user to do them.
+
+**Step 1: Check the log for errors**
+
+```bash
+tail -n 50 ~/.talon/talon.log | grep -E "ERROR|WARNING"
+```
+
+**Step 2: Verify Talon recognizes the voice phrase**
 
 ```bash
 echo 'sim("your command phrase")' | ~/.talon/bin/repl
 ```
 
-If the command is backed by Python actions, also verify the action registered:
+If `sim()` returns the expected rule, the command is working. If it returns
+nothing or the wrong rule, debug before reporting success.
 
-```bash
-echo 'actions.find("your_action_name")' | ~/.talon/bin/repl
-```
-
-For **complex commands** (multi-file changes, Python logic, file operations, context overrides), invoke the full **talon-test-and-debug** skill to run the complete testing checklist including pytest where applicable.
-
-For **simple commands** (single `.talon` rule with a key press or insert), the `sim()` check plus a log check is sufficient.
+For **simple commands** (single `.talon` rule with a key press or insert),
+these two checks are sufficient — you do NOT need to invoke the full
+test-and-debug skill.
 
 ## Output Format
 

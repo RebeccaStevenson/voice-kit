@@ -14,11 +14,18 @@ Walk the user through a structured testing checklist. Follow these steps in orde
 
 **Note:** This skill is often invoked automatically after creating commands via the **talon-create-basic-command** or **talon-create-python-command** skills. When invoked that way, you already know which files were just created/edited — jump straight into the relevant checklist steps rather than asking the user what to test.
 
-Local workspace note: in Becky's environment, AI agents usually start in `~/.talon/`, but Talon-managed repos and profiles still live under `~/.talon/user/`.
+**Prerequisite:** Requires Claude Code (not Cowork) for REPL, log, and pytest
+access. Use absolute paths for all operations:
+- REPL: `$HOME/.talon/bin/repl`
+- Log: `$HOME/.talon/talon.log`
+- User repos: `$HOME/.talon/user/`
+
+Claude Code can be launched from any directory — do not ask the user to
+relaunch.
 
 ## Read the User Profile
 
-Before starting, discover the user's custom repo name (see the **talon-create-basic-command** skill for the full discovery step). Then check for a profile at `~/.talon/user/<user_repo>/.talon-assistant/profile.md`. If it exists, read it and adapt:
+Before starting, discover the user's custom repo name (see the **talon-create-basic-command** skill for the full discovery step). Then check for a profile at `~/.talon/talon-assistant/profile.md`. If it exists, read it and adapt:
 
 - **Beginner (Talon):** Explain what each testing step does and why. Walk through log output and REPL commands in detail.
 - **Intermediate (Talon):** Brief explanations; focus on results.
@@ -27,6 +34,20 @@ Before starting, discover the user's custom repo name (see the **talon-create-ba
 - **None (Git):** If debugging involves checking git status or diffs, explain the commands.
 
 If no profile exists, default to intermediate-level explanations.
+
+## Diagnose First, Ask Second
+
+When the user says something "doesn't work" or "nothing happened", **do not
+immediately ask them to describe the failure**. Since Claude Code has direct
+access to the log and REPL, run the diagnostic steps yourself first:
+
+1. Check the log for errors (`tail -n 100 ~/.talon/talon.log`)
+2. Run `sim("the command phrase")` via the REPL
+3. If the command has Python, run `actions.find("the_action_name")`
+
+Only ask the user for more information if the automated checks come back
+clean and you need context about what they observed (e.g., "the command
+routes correctly in sim() — does it work when you actually say it?").
 
 ## The Testing Checklist
 

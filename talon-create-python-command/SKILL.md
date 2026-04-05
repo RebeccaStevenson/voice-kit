@@ -13,7 +13,10 @@ description: >
 
 Guide the user through combining `.talon` and `.py` files to build commands with real programming logic. Assume the user has basic Talon setup complete and a personal commands folder. No prior Python experience is assumed — explain each concept.
 
-Local workspace note: in Becky's environment, AI agents usually start in `~/.talon/`, but Talon-managed repos and profiles still live under `~/.talon/user/`.
+**Prerequisite:** Requires Claude Code (not Cowork) for filesystem and REPL
+access. Use absolute paths (`$HOME/.talon/user/...`, `$HOME/.talon/bin/repl`)
+for all file operations and commands. Claude Code can be launched from any
+directory — do not ask the user to relaunch.
 
 <!-- SYNC: This "Discover Repo & Load Profile" block is shared with
      talon-create-basic-command, talon-create-custom-repo, and talon-setup-rango.
@@ -32,7 +35,7 @@ Local workspace note: in Becky's environment, AI agents usually start in `~/.tal
 2. **Load the profile.** Immediately after discovering the repo, read the profile:
 
    ```bash
-   cat ~/.talon/user/<user_repo>/.talon-assistant/profile.md
+   cat ~/.talon/talon-assistant/profile.md
    ```
 
    If the file exists, adapt your explanations for the rest of this session:
@@ -43,7 +46,13 @@ Local workspace note: in Becky's environment, AI agents usually start in `~/.tal
    - **Comfortable+ (Coding):** Use standard programming terminology freely.
    - **None (Git):** Don't include Git commands without explaining them.
 
-   If no profile exists, mention: "I don't see a profile yet — you can run the **talon-start** skill to set one up, but we can keep going for now." Then default to intermediate-level explanations.
+   If no profile exists, offer to run setup quickly: "I don't see a profile
+   yet — would you like me to set one up real quick? It's just a few
+   questions and helps me tailor my explanations. Or we can skip it and keep
+   going." If the user says yes, invoke **talon-start** — and when it
+   finishes, resume this skill automatically (don't make the user re-invoke
+   the slash command). If they decline, default to beginner-level
+   explanations to be safe.
 
 <!-- SYNC: This "Search Before Creating" block is shared with
      talon-create-basic-command. Keep both copies in sync when editing. -->
@@ -310,26 +319,51 @@ def _notify_break():
     app.notify("Break Time", "Take a 5-minute break!")
 ```
 
-## After Writing the Command (MANDATORY)
+## Verify List and Data Dependencies Before Writing
 
-After creating or editing any Python-backed command, you MUST verify it works. Since Python commands are inherently more complex, always invoke the **talon-test-and-debug** skill to run the full testing checklist:
+If your command or `.talon` file uses a `{user.*}` list (e.g.,
+`{user.system_paths}`, `{user.website}`), **check that the backing list file
+exists** before writing the command. Don't tell the user to wait for it to
+be auto-generated — create a starter file so the command works immediately.
+
+```bash
+# Check if the list file exists anywhere in the Talon user directory
+find ~/.talon/user/ -name "system_paths*" -type f
+```
+
+If missing, create one in the user's custom repo. Example for system_paths:
+
+```
+# ~/.talon/user/<user_repo>/settings/system_paths-<hostname>.talon-list
+list: user.system_paths
+-
+desktop: ~/Desktop
+documents: ~/Documents
+downloads: ~/Downloads
+```
+
+Get the hostname via `hostname`. Tell the user how to add their own entries.
+The `system_paths-*` pattern is gitignored by convention.
+
+## After Writing the Command — AUTO-INVOKE test-and-debug (MANDATORY)
+
+After creating or editing any Python-backed command, you MUST **automatically
+invoke the talon-test-and-debug skill** — do not ask the user whether to
+test, do not skip this step, do not just run sim() yourself. Python commands
+always get the full testing checklist because they have more failure modes
+than pure `.talon` files (import errors, type mismatches, runtime exceptions,
+action registration issues).
+
+The test-and-debug skill will:
 
 1. **Check the log** for import errors or `ActionProtoError`
 2. **Verify action registration** via `actions.find()`
 3. **Verify voice routing** via `sim()`
-4. **Run pytest** for any non-trivial logic (file operations, string manipulation, calculations)
+4. **Run pytest** for any non-trivial logic
 
-At absolute minimum (for very simple Python actions), verify the action registered:
-
-```bash
-echo 'actions.find("your_action_name")' | ~/.talon/bin/repl
-```
-
-And confirm the voice phrase routes correctly:
-
-```bash
-echo 'sim("your command phrase")' | ~/.talon/bin/repl
-```
+Invoke it immediately after writing the files — before presenting the
+output summary to the user. If tests reveal issues, fix them before
+reporting success.
 
 ## Output Format
 

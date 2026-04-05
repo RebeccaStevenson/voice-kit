@@ -11,7 +11,10 @@ description: >
 
 Guide the user through installing the Rango browser extension and its Talon integration so they can click links, navigate tabs, scroll pages, and fill forms entirely by voice. Assume Talon and the community command set are already installed. No programming experience is required.
 
-Local workspace note: in Becky's environment, AI agents usually start in `~/.talon/`, but Talon-managed repos and profiles still live under `~/.talon/user/`.
+**Prerequisite:** Requires Claude Code (not Cowork) for filesystem and git
+access. Use absolute paths (`$HOME/.talon/user/...`) for all file operations
+and commands. Claude Code can be launched from any directory — do not ask the
+user to relaunch.
 
 <!-- SYNC: This "Discover Repo & Load Profile" block is shared with
      talon-create-basic-command, talon-create-python-command, and talon-create-custom-repo.
@@ -30,7 +33,7 @@ Local workspace note: in Becky's environment, AI agents usually start in `~/.tal
 2. **Load the profile.** Immediately after discovering the repo, read the profile:
 
    ```bash
-   cat ~/.talon/user/<user_repo>/.talon-assistant/profile.md
+   cat ~/.talon/talon-assistant/profile.md
    ```
 
    If the file exists, adapt your explanations for the rest of this session:

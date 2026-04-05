@@ -11,7 +11,17 @@ description: >
 
 Walk the user through every step of installing and configuring Talon from scratch on macOS. Assume zero prior experience with voice control software. Keep language friendly, jargon-free, and encouraging.
 
-Local workspace note: in Becky's environment, AI agents usually start in `~/.talon/`, but Talon-managed repos and profiles still live under `~/.talon/user/`.
+**Prerequisite:** Requires Claude Code (not Cowork). Before running any
+commands, resolve the Talon home directory and use absolute paths throughout:
+
+```bash
+TALON_HOME="$HOME/.talon"
+mkdir -p "$TALON_HOME"
+```
+
+Claude Code can be launched from any directory — do not ask the user to
+relaunch. If cwd is not `~/.talon/`, briefly note "You started Claude outside
+`~/.talon/`, so I'll use absolute paths" and continue.
 
 ## Before Starting
 
@@ -20,7 +30,7 @@ Local workspace note: in Becky's environment, AI agents usually start in `~/.tal
 Before installing anything, check whether the user already has a profile:
 
 ```bash
-cat ~/.talon/user/<user_repo>/.talon-assistant/profile.md
+cat ~/.talon/talon-assistant/profile.md
 ```
 
 If no profile exists, **always tell the user**: "Before we install Talon, let
@@ -53,19 +63,66 @@ Ask which components the user wants to set up using AskUserQuestion:
    - Launch Talon from Applications
    - Grant macOS accessibility permissions when prompted (System Settings > Privacy & Security > Accessibility)
    - Grant microphone permission when prompted
-4. Confirm Talon is running: the user should see a Talon icon in the macOS menu bar (top-right).
+
+### What Talon Looks Like When Running
+
+**This is important to explain upfront** — Talon confuses many first-time
+users because it doesn't open a window. Tell the user:
+
+> Talon is a **background app** — it doesn't open a window or show a splash
+> screen. The **only visible sign** that Talon is running is a small icon
+> that appears in your **menu bar** (the strip of tiny icons at the very
+> top-right of your screen, next to the clock, Wi-Fi, and battery icons).
+>
+> The Talon icon is small and easy to miss. Look for a new icon that wasn't
+> there before — it looks like a small talon/claw shape. If you see it,
+> Talon is running!
+>
+> If you don't see a new icon, don't worry — macOS sometimes blocks new apps
+> silently. See the troubleshooting steps below.
+
+### "Nothing happened" — First Launch Troubleshooting
+
+If the user says nothing happened, Talon didn't open, or they can't tell if
+it's running, walk through these steps **in order**:
+
+1. **Look carefully at the menu bar** — the icon is small and could be hidden
+   behind the notch on newer MacBooks. Try hovering along the top-right edge.
+2. **Check if macOS blocked it** — go to **System Settings → Privacy &
+   Security**, scroll down, and look for "Talon was blocked from opening."
+   Click **Open Anyway** if you see this.
+3. **Add permissions manually** — sometimes the permission popups don't
+   appear on first launch:
+   - **System Settings → Privacy & Security → Accessibility** — click the
+     **+** button and add Talon from Applications
+   - **System Settings → Privacy & Security → Microphone** — same thing
+4. **Try right-click → Open** — go to Applications, right-click the Talon
+   app, and choose **Open** instead of double-clicking. This bypasses the
+   macOS Gatekeeper warning for unsigned apps.
+5. **Quit and relaunch** — if you granted permissions after the first launch
+   attempt, you need to fully quit Talon (if it's in the menu bar,
+   right-click it → Quit) and open it again for the permissions to take
+   effect.
 
 ### Speech Engine
 
-After launching Talon, the user needs to enable the speech engine:
+Once Talon is confirmed running (icon visible in menu bar), the user needs to
+enable the speech engine:
 
-1. Click the Talon icon in the macOS menu bar (top-right)
-2. Select **Speech Recognition → Conformer D**
-3. Wait for the model to download (this may take a few minutes on first launch)
+1. **Click the Talon icon** in your menu bar (the tiny icon at the top-right
+   of your screen, near the clock)
+2. A menu will drop down — select **Speech Recognition → Conformer D**
+3. Talon will start downloading the speech model. A progress indicator may
+   appear. This can take a few minutes depending on internet speed.
+4. Once the download completes, Talon is ready to listen.
 
-**Conformer** is Talon's built-in, high-accuracy speech engine and the recommended choice for all users. It runs locally — no internet connection needed after the initial download. Note that Dragon NaturallySpeaking is also supported as an alternative engine, though Conformer is the standard starting point.
+**Conformer** is Talon's built-in, high-accuracy speech engine and the
+recommended choice for all users. It runs entirely on your computer — no
+internet connection needed after the initial download.
 
-> **Note:** Conformer and wav2letter are two different engines. Older Talon guides may reference wav2letter, but Conformer D is the current recommended engine and significantly more accurate.
+> **Note for guides referencing wav2letter:** Conformer D is the current
+> recommended engine and significantly more accurate than wav2letter. Dragon
+> NaturallySpeaking is also supported as an alternative but is not required.
 
 ## Step 2: Clone the Community Command Set
 
@@ -74,17 +131,14 @@ The community repo provides hundreds of ready-made voice commands. It goes insid
 > **No GitHub account needed.** Git is a tool that runs on your computer —
 > cloning a public repository doesn't require an account.
 
-Guide the user through these terminal commands. If the user's Git experience
-is "None" (check the profile), explain each command before running it.
+Since Claude Code runs directly on the user's machine, **you can run these
+commands for the user** — no need to ask them to open Terminal separately.
+If the user's Git experience is "None" (check the profile), explain what
+each command does before running it, but go ahead and execute it.
 
 ```bash
-# Open Terminal (Applications > Utilities > Terminal)
-
-# Navigate to the Talon workspace root
-cd ~/.talon
-
-# Clone the community commands
-git clone https://github.com/talonhub/community user/community
+# Clone the community commands into the Talon user directory
+git clone https://github.com/talonhub/community "$HOME/.talon/user/community"
 ```
 
 If the user doesn't have `git` installed, help them install it:
@@ -127,9 +181,10 @@ Direct the user to install Rango from their browser's extension store:
 
 ### Install Rango's Talon Commands
 
+Run this directly (Claude Code has terminal access):
+
 ```bash
-cd ~/.talon
-git clone https://github.com/david-tejada/rango-talon user/rango-talon
+git clone https://github.com/david-tejada/rango-talon "$HOME/.talon/user/rango-talon"
 ```
 
 Talon will auto-load the new commands. The user should now see small letter hints overlaid on clickable elements in their browser.

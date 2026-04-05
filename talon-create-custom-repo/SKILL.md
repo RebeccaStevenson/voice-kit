@@ -12,7 +12,10 @@ description: >
 
 Guide the user through creating their own command repository that sits alongside the community repo inside `~/.talon/user/`. This is the recommended approach (Option B) for managing custom commands — it keeps upstream repos untouched so updates pull cleanly.
 
-Local workspace note: in Becky's environment, AI agents usually start in `~/.talon/`, but Talon-managed repos and profiles still live under `~/.talon/user/`.
+**Prerequisite:** Requires Claude Code (not Cowork) for filesystem and git
+access. Use absolute paths (`$HOME/.talon/user/...`) for all file operations
+and commands. Claude Code can be launched from any directory — do not ask the
+user to relaunch.
 
 <!-- SYNC: This "Discover Repo & Load Profile" block is shared with
      talon-create-basic-command, talon-create-python-command, and talon-setup-rango.
@@ -33,7 +36,7 @@ Before creating a new repo, check whether the user already has one and whether a
 2. **Load the profile** (if it exists):
 
    ```bash
-   cat ~/.talon/user/<user_repo>/.talon-assistant/profile.md
+   cat ~/.talon/talon-assistant/profile.md
    ```
 
    If the file exists, adapt your explanations for the rest of this session:
@@ -43,7 +46,13 @@ Before creating a new repo, check whether the user already has one and whether a
    - **None / Basic (Coding):** Avoid jargon; explain Git and terminal concepts used.
    - **None (Git):** Explain every Git command before running it. Offer to run them for the user.
 
-   If no profile exists, mention: "I don't see a profile yet — you can run the **talon-start** skill to set one up, but we can keep going for now." Then default to intermediate-level explanations.
+   If no profile exists, offer to run setup quickly: "I don't see a profile
+   yet — would you like me to set one up real quick? It's just a few
+   questions and helps me tailor my explanations. Or we can skip it and keep
+   going." If the user says yes, invoke **talon-start** — and when it
+   finishes, resume this skill automatically (don't make the user re-invoke
+   the slash command). If they decline, default to beginner-level
+   explanations to be safe.
 
 ## Why a Separate Repo?
 
@@ -63,14 +72,11 @@ Ask the user what they'd like to name their custom commands folder using AskUser
 Once the user picks a name, provide the terminal commands. Use `REPO_NAME` as a placeholder for their chosen name:
 
 ```bash
-cd ~/.talon
-
-# Create the repo and basic structure
-mkdir -p user/REPO_NAME/{apps,core,tags,productivity,settings,tests,docs}
+# Create the repo and basic structure (using absolute paths)
+mkdir -p "$HOME/.talon/user/REPO_NAME"/{apps,core,tags,productivity,settings,tests,docs}
 
 # Initialize a git repository
-cd user/REPO_NAME
-git init
+cd "$HOME/.talon/user/REPO_NAME" && git init
 ```
 
 Explain what each folder is for:
@@ -118,9 +124,7 @@ testpaths = ["tests"]
 ## Step 4: Create Initial Commit
 
 ```bash
-cd ~/.talon/user/REPO_NAME
-git add .
-git commit -m "initial setup: directory structure and starter command"
+cd "$HOME/.talon/user/REPO_NAME" && git add . && git commit -m "initial setup: directory structure and starter command"
 ```
 
 ## Step 5: Optional — Back Up to GitHub
