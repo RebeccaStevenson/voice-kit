@@ -22,8 +22,8 @@ and commands. Claude Code can be launched from any directory — do not ask the
 user to relaunch.
 
 <!-- SYNC: This "Discover Repo & Load Profile" block is shared with
-     talon-create-basic-command, talon-create-python-command, and talon-setup-rango.
-     Keep all four copies in sync when editing. -->
+     talon-create-command, talon-create-custom-repo, and talon-setup-rango.
+     Keep all copies in sync when editing. -->
 
 ## Discover Repo & Load Profile (FIRST STEP — do both before anything else)
 
@@ -156,4 +156,4 @@ Share these with the user:
 
 ## Adding Commands Later
 
-After initial setup, point the user to the **talon-create-basic-command** or **talon-create-python-command** skills for guidance on writing new commands. The talon-test-and-debug skill covers how to verify commands work correctly.
+After initial setup, point the user to the **talon-create-command** skill for guidance on writing new commands. The talon-test-and-debug skill covers how to verify commands work correctly.

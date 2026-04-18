@@ -17,7 +17,7 @@ Walk the user through a structured testing checklist. Follow these steps in orde
 > and [Basic Customization](https://talon.wiki/Customization/basic_customization)
 > for log interpretation and debugging tips.
 
-**Note:** This skill is often invoked automatically after creating commands via the **talon-create-basic-command** or **talon-create-python-command** skills. When invoked that way, you already know which files were just created/edited — jump straight into the relevant checklist steps rather than asking the user what to test.
+**Note:** This skill is often invoked automatically after creating commands via the **talon-create-command** skill. When invoked that way, you already know which files were just created/edited — jump straight into the relevant checklist steps rather than asking the user what to test.
 
 **Prerequisite:** Requires Claude Code (not Cowork) for REPL, log, and pytest
 access. Use absolute paths for all operations:
@@ -30,7 +30,7 @@ relaunch.
 
 ## Read the User Profile
 
-Before starting, discover the user's custom repo name (see the **talon-create-basic-command** skill for the full discovery step). Then check for a profile at `~/.talon/talon-assistant/profile.md`. If it exists, read it and adapt:
+Before starting, discover the user's custom repo name (see the **talon-create-command** skill for the full discovery step). Then check for a profile at `~/.talon/talon-assistant/profile.md`. If it exists, read it and adapt:
 
 - **Beginner (Talon):** Explain what each testing step does and why. Walk through log output and REPL commands in detail.
 - **Intermediate (Talon):** Brief explanations; focus on results.

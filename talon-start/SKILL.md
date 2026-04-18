@@ -262,11 +262,11 @@ a personal repo yet.
 `pyproject.toml`, starter `.talon` file; initializes git.
 **Reference doc:** `references/directory-layout.md`
 
-### talon-create-basic-command
-**Purpose:** Write `.talon` files for voice commands — keyboard shortcuts,
-text insertion, app-specific actions.
-**When to use:** User wants a new voice command that doesn't require
-programming logic.
+### talon-create-command
+**Purpose:** Create voice commands — from simple `.talon` keyboard shortcuts
+to Python-scripted actions with logic. Decides whether Python is needed and
+handles both paths.
+**When to use:** User wants a new voice command of any complexity.
 **Mandatory rules:**
 1. **Search before creating** — always search both the community and user
    repos for existing commands first. Report: `Searched: community ✓ /
@@ -274,24 +274,9 @@ programming logic.
 2. **Prefer named actions** over raw key presses (`edit.copy()` not
    `key(cmd-c)`)
 3. **Verify with sim()** after writing the command
-**File placement:** Mirror community structure — `apps/`, `core/`, `tags/`,
-`productivity/`.
-**Reference doc:** `references/syntax-guide.md` — context matchers, captures,
-lists, key names, settings, tags.
-
-### talon-create-python-command
-**Purpose:** Combine `.talon` + `.py` files for commands that need real
-programming logic (if/else, loops, file I/O, clipboard, APIs).
-**When to use:** The command needs conditional logic, data processing,
-reusable helper functions, or system interaction.
-**Mandatory rules:**
-1. **Search before creating** — same as talon-create-basic-command
-2. **Type annotations and docstrings** required on every action
-3. **Always invoke talon-test-and-debug** after writing Python commands
-**Key Talon Python APIs:** `Module`, `Context`, `actions`, `clip`,
-`app.notify()`, `cron`, `ui`, `scope`.
-**Reference doc:** `references/python-api-reference.md` — full API reference,
-common patterns, type annotations cheat sheet.
+4. **Auto-invoke talon-test-and-debug** for Python commands
+**Reference docs:** `references/syntax-guide.md` (`.talon` syntax),
+`references/python-api-reference.md` (Python API).
 
 ### talon-test-and-debug
 **Purpose:** Structured 5-step testing checklist to verify commands and
@@ -353,8 +338,8 @@ grouped by category.
 ## Skill Dependency Order
 
 ```
-talon-start → talon-setup-talon → talon-create-custom-repo → talon-create-basic-command
-                                          → talon-create-python-command → talon-test-and-debug
+talon-start → talon-setup-talon → talon-create-custom-repo → talon-create-command
+                                                                    → talon-test-and-debug
                                           → talon-setup-rango (optional)
                                           → talon-customize-settings (ongoing)
 ```
@@ -416,9 +401,8 @@ After the profile is set up, suggest this order for the other skills:
 
 1. **talon-setup-talon** — Install Talon and the community command set
 2. **talon-create-custom-repo** — Set up your personal commands folder
-3. **talon-create-basic-command** — Write your first voice commands
-4. **talon-create-python-command** — Build commands with programming logic
-5. **talon-test-and-debug** — Verify commands work and troubleshoot issues
+3. **talon-create-command** — Write your first voice commands (handles both simple and Python-scripted)
+4. **talon-test-and-debug** — Verify commands work and troubleshoot issues
 6. **talon-setup-rango** (optional) — Add hands-free browser control
 7. **talon-customize-settings** (ongoing) — Update vocabulary, websites, and other settings anytime
 

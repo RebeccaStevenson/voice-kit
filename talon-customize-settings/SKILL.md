@@ -8,7 +8,7 @@ description: >
   misspelling a name", "how do I add a search engine", "update my
   settings", or any request to modify Talon's word lists, display
   preferences, or path aliases. Do NOT use for creating voice commands —
-  that's talon-create-basic-command or talon-create-python-command.
+  that's talon-create-command.
 ---
 
 # Customize Talon Settings
