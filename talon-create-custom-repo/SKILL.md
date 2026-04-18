@@ -12,6 +12,10 @@ description: >
 
 Guide the user through creating their own command repository that sits alongside the community repo inside `~/.talon/user/`. This is the recommended approach (Option B) for managing custom commands — it keeps upstream repos untouched so updates pull cleanly.
 
+> Based on the [Talon Community Wiki](https://talon.wiki/). See
+> [Basic Customization](https://talon.wiki/Customization/basic_customization)
+> for how Talon auto-loads files from `user/`.
+
 **Prerequisite:** Requires Claude Code (not Cowork) for filesystem and git
 access. Use absolute paths (`$HOME/.talon/user/...`) for all file operations
 and commands. Claude Code can be launched from any directory — do not ask the

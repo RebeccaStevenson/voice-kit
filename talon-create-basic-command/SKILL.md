@@ -11,6 +11,11 @@ description: >
 
 Guide the user through writing `.talon` files to define voice commands. Assume the user has Talon and the community repo installed, and has a personal commands folder (if not, point them to the **talon-setup-talon** and **talon-create-custom-repo** skills first).
 
+> Based on the [Talon Community Wiki](https://talon.wiki/). Key
+> references: [Talon Files](https://talon.wiki/Customization/talon-files),
+> [Basic Customization](https://talon.wiki/Customization/basic_customization),
+> [Talon Lists](https://talon.wiki/Customization/talon_lists).
+
 **Prerequisite:** Requires Claude Code (not Cowork) for filesystem and REPL
 access. Use absolute paths (`$HOME/.talon/user/...`, `$HOME/.talon/bin/repl`)
 for all file operations and commands. Claude Code can be launched from any

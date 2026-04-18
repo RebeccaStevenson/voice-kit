@@ -11,6 +11,10 @@ description: >
 
 Guide the user through installing the Rango browser extension and its Talon integration so they can click links, navigate tabs, scroll pages, and fill forms entirely by voice. Assume Talon and the community command set are already installed. No programming experience is required.
 
+> Based on the [Talon Community Wiki](https://talon.wiki/). See
+> [Essential Tools](https://talon.wiki/Integrations/essential-tools) for
+> Rango and other Talon integrations.
+
 **Prerequisite:** Requires Claude Code (not Cowork) for filesystem and git
 access. Use absolute paths (`$HOME/.talon/user/...`) for all file operations
 and commands. Claude Code can be launched from any directory — do not ask the

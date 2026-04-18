@@ -12,6 +12,11 @@ description: >
 
 Walk the user through a structured testing checklist. Follow these steps in order — each step catches a different class of problem, from syntax errors to runtime failures.
 
+> Based on the [Talon Community Wiki](https://talon.wiki/). See
+> [Troubleshooting](https://talon.wiki/Resource%20Hub/Speech%20Recognition/troubleshooting)
+> and [Basic Customization](https://talon.wiki/Customization/basic_customization)
+> for log interpretation and debugging tips.
+
 **Note:** This skill is often invoked automatically after creating commands via the **talon-create-basic-command** or **talon-create-python-command** skills. When invoked that way, you already know which files were just created/edited — jump straight into the relevant checklist steps rather than asking the user what to test.
 
 **Prerequisite:** Requires Claude Code (not Cowork) for REPL, log, and pytest

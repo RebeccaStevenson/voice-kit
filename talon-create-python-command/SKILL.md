@@ -13,6 +13,10 @@ description: >
 
 Guide the user through combining `.talon` and `.py` files to build commands with real programming logic. Assume the user has basic Talon setup complete and a personal commands folder. No prior Python experience is assumed — explain each concept.
 
+> Based on the [Talon Community Wiki](https://talon.wiki/). Key
+> references: [Actions](https://talon.wiki/Customization/Talon%20Framework/actions),
+> [Modules & Contexts](https://talon.wiki/Customization/Talon%20Framework/modules_and_contexts).
+
 **Prerequisite:** Requires Claude Code (not Cowork) for filesystem and REPL
 access. Use absolute paths (`$HOME/.talon/user/...`, `$HOME/.talon/bin/repl`)
 for all file operations and commands. Claude Code can be launched from any

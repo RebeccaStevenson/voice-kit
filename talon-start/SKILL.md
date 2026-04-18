@@ -146,6 +146,21 @@ create `~/.talon/talon-assistant/profile.md`:
 
 ## Preferences
 <!-- Add user preferences as they come up in conversation -->
+
+## Setup Progress
+| Step | Status | Date |
+|------|--------|------|
+| Install Talon | — | |
+| Community commands | — | |
+| Personal repo | — | |
+| Personalize: vocabulary | — | |
+| Personalize: words to replace | — | |
+| Personalize: websites | — | |
+| Personalize: search engines | — | |
+| Personalize: subtitles | — | |
+| Personalize: system paths | — | |
+| Rango | — | |
+| Learn the basics | — | |
 ```
 
 ### 5. Create the Memory File (DO NOT SKIP)
@@ -219,12 +234,23 @@ commands.
 `talon-assistant/CLAUDE.md` (this file).
 
 ### talon-setup-talon
-**Purpose:** Step-by-step Talon installation and community command setup.
-**When to use:** User needs to install Talon, enable the speech engine, or
-clone the community repo.
+**Purpose:** Step-by-step Talon installation, community command setup, and
+personalization walkthrough.
+**When to use:** User needs to install Talon, enable the speech engine,
+clone the community repo, or personalize settings. Also handles resume —
+reads the `## Setup Progress` table in `profile.md` and picks up where
+the user left off.
 **Prerequisite:** Profile must exist (run **talon-start** first).
 **Reference doc:** `references/troubleshooting.md` — startup issues, mic
 problems, permissions, common log errors.
+
+### talon-customize-settings
+**Purpose:** Add or update Talon settings — vocabulary, words to replace,
+websites, search engines, subtitles, and system paths.
+**When to use:** User wants to modify settings after initial setup. For
+example: "add a word to vocabulary", "Talon keeps misspelling a name",
+"add a website", "change subtitle size." Not for creating voice commands.
+**Prerequisite:** Personal repo must exist.
 
 ### talon-create-custom-repo
 **Purpose:** Create a personal commands folder alongside the community repo.
@@ -330,6 +356,7 @@ grouped by category.
 talon-start → talon-setup-talon → talon-create-custom-repo → talon-create-basic-command
                                           → talon-create-python-command → talon-test-and-debug
                                           → talon-setup-rango (optional)
+                                          → talon-customize-settings (ongoing)
 ```
 
 Each skill builds on the previous. Users can skip ahead, but this order
@@ -393,6 +420,7 @@ After the profile is set up, suggest this order for the other skills:
 4. **talon-create-python-command** — Build commands with programming logic
 5. **talon-test-and-debug** — Verify commands work and troubleshoot issues
 6. **talon-setup-rango** (optional) — Add hands-free browser control
+7. **talon-customize-settings** (ongoing) — Update vocabulary, websites, and other settings anytime
 
 You don't have to do them all at once — feel free to jump ahead if you want
 to try something specific. But this order works well because each skill

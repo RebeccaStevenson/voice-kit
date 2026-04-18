@@ -8,9 +8,14 @@
 ## Voice Commands Not Recognized
 
 - **Is Talon awake?** Say "wake up". If Talon is asleep, it ignores all commands except wake phrases.
-- **Microphone check**: Right-click the Talon menu bar icon > Preferences to verify the correct microphone is selected.
-- **Background noise**: Talon works best in a reasonably quiet environment. Reduce background noise or move closer to the microphone.
-- **Speak naturally**: The Conformer engine handles natural speech well. Avoid over-enunciating — speak at a normal pace and volume.
+- **Microphone check**: Right-click the Talon menu bar icon to verify the correct microphone is selected. Note that the system microphone and Talon's microphone are separate settings — even if your system mic is correct, Talon might be listening on a different one.
+- **Background noise**: Talon works best in a reasonably quiet environment. Reduce background noise or move closer to the microphone. A headset mic about 1 inch from your mouth or a table mic 6–12 inches away works best.
+- **Speak naturally**: The Conformer engine handles natural speech well. Avoid over-enunciating — speak at a normal pace and volume. Keep a consistent distance from the mic. Prepare what you want to say before speaking — hesitations and mid-command pauses can confuse the recognizer.
+- **Wrong mode**: Talon has a command mode and a dictation mode. In dictation mode, Talon types out everything you say as text instead of executing commands. If Talon seems to be typing your commands, say `command mode` to switch back.
+- **Commands get cut off**: If Talon only catches the first part of a multi-word command, the speech timeout may be too short. Add `speech.timeout = 0.4` (or higher) in a `settings():` block in a `.talon` file.
+- **Speech engine still downloading**: If Conformer hasn't finished downloading, Talon won't recognize anything yet. Check the Talon menu bar for download progress.
+
+See also: [Troubleshooting](https://talon.wiki/Resource%20Hub/Speech%20Recognition/troubleshooting) and [Improving Recognition Accuracy](https://talon.wiki/Resource%20Hub/Speech%20Recognition/improving_recognition_accuracy) on the Talon wiki.
 
 ## Community Commands Not Loading
 
