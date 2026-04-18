@@ -67,6 +67,12 @@ Before writing ANY new command, search existing repos thoroughly.
 2. **Search user repo** (`~/.talon/user/<user_repo>/`) — avoid duplicating
    existing custom commands.
 3. **Search broadly** — multiple keywords, synonyms, action names.
+4. **Search for generic patterns** — many community commands use captures
+   and lists (e.g., `{user.search_engine} (that | this)`) that handle
+   whole categories of requests. Before creating a command for "search
+   Google for selected text," search for `search_engine`, `that | this`,
+   `selected_text`, and similar generic patterns. The community often
+   already has a general-purpose command that covers the specific request.
 
 **Always report findings:**
 
