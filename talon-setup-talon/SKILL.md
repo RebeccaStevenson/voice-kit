@@ -523,10 +523,19 @@ Point the user to these essential first commands:
 | `help search <phrase>` | Search for a specific command |
 | `command history` | See recent commands |
 | `undo that` | Undo the last action |
+| `mouse grid` | Show a numbered grid for clicking without a mouse |
+| `touch` | Left click |
+| `righty` | Right click |
+| `scroll down` / `scroll up` | Scroll the page |
 
 Recommend learning order: alphabet first, then keys and symbols, then formatters (like `snake hello world` to type `hello_world`), then mouse and editor commands.
 
 This plugin also includes an interactive training page for practicing the alphabet, spelling, numbers, symbols, and formatters in the browser. Tell the user they can ask to "open the training page" anytime to try it — it's at `resources/talon-training.html`.
+
+Also mention the [Talon Slack](https://talonvoice.com/chat) — it's the
+main place to get help from other Talon users. The `#help` channel is
+active and welcoming. Let the user know they can join anytime if they
+get stuck or want to learn from others.
 
 ### Why a Command Might Not Work
 
@@ -563,6 +572,24 @@ Anytime the user wants to see what Talon is doing — whether something isn't wo
 - Or right-click the Talon menu bar icon → Scripting → View Log
 
 The log shows when files load (`[+]`), errors to fix (`ERROR`), and which commands are active. This is the first tool to reach for when debugging.
+
+### What's Next
+
+After covering the basics, briefly mention what the user can explore next.
+Keep it short — just plant the seeds, don't overwhelm.
+
+> You're set up. As you get comfortable, here are some things worth
+> exploring:
+>
+> - **Better microphone** — a good mic makes a big difference in
+>   accuracy. See the [Hardware Guide](https://talon.wiki/Resource%20Hub/Hardware/)
+>   for recommendations at every budget.
+> - **Cursorless** — structural code editing by voice, if you write code.
+> - **Talon-HUD** — an on-screen display that shows what Talon is doing.
+> - **Eye tracking** — combine with Talon for hands-free mouse control.
+>
+> The full list is at [Essential Tools](https://talon.wiki/Integrations/essential-tools)
+> on the wiki.
 
 After covering the basics, update the progress table: mark **Learn the
 basics** as `done`.
