@@ -585,7 +585,6 @@ Keep it short — just plant the seeds, don't overwhelm.
 >   accuracy. See the [Hardware Guide](https://talon.wiki/Resource%20Hub/Hardware/)
 >   for recommendations at every budget.
 > - **Cursorless** — structural code editing by voice, if you write code.
-> - **Talon-HUD** — an on-screen display that shows what Talon is doing.
 > - **Eye tracking** — combine with Talon for hands-free mouse control.
 >
 > The full list is at [Essential Tools](https://talon.wiki/Integrations/essential-tools)

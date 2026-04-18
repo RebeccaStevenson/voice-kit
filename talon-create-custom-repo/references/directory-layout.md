@@ -2,7 +2,7 @@
 
 ## Overall Structure
 
-In Becky's local setup, `~/.talon/` is the AI-agent workspace root, and `~/.talon/user/` is the Talon auto-load root. The `user/` directory is **not** a single git repository. It contains multiple independent repos and possibly some untracked files.
+In Rebecca's local setup, `~/.talon/` is the AI-agent workspace root, and `~/.talon/user/` is the Talon auto-load root. The `user/` directory is **not** a single git repository. It contains multiple independent repos and possibly some untracked files.
 
 ```
 ~/.talon/
