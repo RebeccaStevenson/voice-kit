@@ -104,6 +104,13 @@ Use **AskUserQuestion** with a single prompt like this:
 >    - **Brief context** — A sentence or two about what's happening under the hood is nice, but keep it short
 >    - **Teach me as we go** — Explain the syntax and structure as it comes up naturally while we build things
 >    - **Deep dive** — I want to really understand how Talon works — show me the internals, the file anatomy, the API
+> 6. **Custom vocabulary, replacements, or paths** *(optional)* — do you
+>    want me to remember any project names, jargon, homophone fixes
+>    ("right" vs "write"), or frequently-used directories? You can either:
+>    - **Paste** the list directly in your reply, or
+>    - **Give me a path** to a text file and I'll read it, or
+>    - **Skip** — you can always add this later by editing
+>      `~/.talon/talon-assistant/user-context.md`
 
 Provide brief descriptions only if the user asks for clarification:
 - Talon Beginner = just installed or learning basics; Intermediate = use daily, customized some things; Advanced = write own commands, know the API
@@ -121,6 +128,31 @@ the user's machine. If the user's Git experience is "None", the assistant
 will explain every Git command before running it and offer to run commands on
 the user's behalf. If Git is not installed, help the user install it (on
 macOS: typing `git` in Terminal prompts Xcode Command Line Tools).
+
+**Handling the optional vocabulary/paths answer (question 6):**
+
+- If the user **skips**, do not create `user-context.md` — just continue.
+- If the user **pastes** content inline, or **gives you a path** to a text
+  file (read it with the Read tool), write the content **verbatim** to
+  `~/.talon/talon-assistant/user-context.md` with this small header so
+  future sessions know what it is:
+
+  ````markdown
+  # User-Provided Context
+
+  Imported by talon-start on <today's date>. Free-form notes — vocabulary,
+  word replacements, common paths, project names, anything else worth
+  remembering. The agent reads this file alongside `profile.md` and
+  `memory.md` and interprets the contents in context. Edit freely.
+
+  ---
+
+  <verbatim user content goes here>
+  ````
+
+  Do **not** parse the content into a rigid schema or rewrite it into
+  tables. Other skills read this file and pick out what's relevant when
+  they need it — preserving the user's original wording matters.
 
 ### 4. Write the Profile (DO NOT SKIP)
 
@@ -192,6 +224,7 @@ without re-reading every skill file. Use the Write tool to create
 - **Proficiency:** Talon <level> · Coding <level> · Git <level> · Learning depth <level>
 - **Profile file:** `~/.talon/talon-assistant/profile.md`
 - **Memory file:** `~/.talon/talon-assistant/memory.md`
+- **User context (optional):** `~/.talon/talon-assistant/user-context.md` — only present if the user imported vocabulary/replacements/paths during onboarding. Read it on session start if it exists.
 
 ## Environment
 
@@ -216,7 +249,9 @@ commands.
 **Purpose:** Create the user profile and initialize the assistant.
 **When to use:** First-time setup, or when the user says "update my profile."
 **Creates:** `talon-assistant/profile.md`, `talon-assistant/memory.md`,
-`talon-assistant/CLAUDE.md` (this file).
+`talon-assistant/CLAUDE.md` (this file). Optionally also
+`talon-assistant/user-context.md` if the user imported vocabulary,
+replacements, or paths during onboarding.
 
 ### talon-setup-talon
 **Purpose:** Step-by-step Talon installation and community command setup.
@@ -307,6 +342,11 @@ grouped by category.
    `talon-assistant/memory.md` (voice phrase, file path, date).
 6. **Same quality for all levels** — proficiency only changes explanation
    depth and tone, never the quality of commands or file structure.
+7. **Check for user-context.md** — if
+   `~/.talon/talon-assistant/user-context.md` exists, read it alongside the
+   profile so user-supplied vocabulary, word replacements, and paths can
+   inform commands, examples, and explanations. Interpret it in context;
+   it is intentionally free-form, not a schema.
 
 ## Proficiency Adaptation Quick Reference
 
@@ -379,6 +419,13 @@ You can update your profile any time by saying "update my profile" or by
 editing any of these files directly.
 ```
 
+If `user-context.md` was created from question 6 of the interview, list it
+as a fourth bullet and update the count to four:
+
+```
+  • user-context.md — vocabulary, replacements, and paths you imported
+```
+
 This plugin also includes an interactive training page for practicing the
 alphabet, spelling, numbers, symbols, and formatters in the browser. Let the
 user know they can ask to "open the training page" anytime to try it.
@@ -420,7 +467,11 @@ it will read the profile you just created and adapt accordingly.
 Every skill in this plugin should, as an early step:
 
 1. Read `~/.talon/talon-assistant/profile.md`
-2. Adapt **tone and detail level** based on what it finds:
+2. Check for `~/.talon/talon-assistant/user-context.md` and read it if
+   present — it holds free-form vocabulary, word replacements, and paths
+   the user imported during onboarding. Interpret it in context (no schema)
+   and use it to ground examples, project paths, and test phrases.
+3. Adapt **tone and detail level** based on what it finds:
 
 | Proficiency | How to adapt |
 |------------|--------------|
