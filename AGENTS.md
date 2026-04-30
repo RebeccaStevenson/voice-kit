@@ -4,7 +4,7 @@
 
 A toolkit for voice control beginners containing:
 
-- `talon-start/`, `talon-setup-talon/`, `talon-setup-rango/`, `talon-create-custom-repo/`, `talon-create-basic-command/`, `talon-create-python-command/`, and `talon-test-and-debug/` — root-level Talon skills that walk users through installing and customising Talon voice control
+- `talon-start/`, `talon-setup-talon/`, `talon-setup-rango/`, `talon-setup-cursorless/`, `talon-create-custom-repo/`, `talon-create-basic-command/`, `talon-create-python-command/`, and `talon-test-and-debug/` — root-level Talon skills that walk users through installing and customising Talon voice control
 - **superwhisper-assistant/** — standalone skill for configuring SuperWhisper dictation modes
 
 ## Repo Structure
@@ -23,6 +23,9 @@ voice-kit/
 │   ├── SKILL.md
 │   └── references/*.md
 ├── talon-setup-rango/
+│   ├── SKILL.md
+│   └── references/*.md
+├── talon-setup-cursorless/
 │   ├── SKILL.md
 │   └── references/*.md
 ├── talon-create-custom-repo/

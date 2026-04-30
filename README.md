@@ -49,6 +49,7 @@ Use the skills in `.agents/skills/` for Talon Voice and SuperWhisper tasks:
 - `talon-create-basic-command`
 - `talon-create-python-command`
 - `talon-test-and-debug`
+- `talon-setup-cursorless`
 - `superwhisper-assistant`
 ```
 
@@ -65,6 +66,7 @@ After installing, restart your agent so it reloads the skill list.
 | [talon-create-basic-command/](talon-create-basic-command/) | Creates `.talon` commands for shortcuts, text insertion, and app-specific actions. | "Make a command that pastes my email signature." |
 | [talon-create-python-command/](talon-create-python-command/) | Builds more advanced Talon commands with Python logic and reusable actions. | "Create a Talon action that cleans up selected text." |
 | [talon-test-and-debug/](talon-test-and-debug/) | Checks logs, REPL output, and tests so broken commands can be diagnosed quickly. | "This command loads but never triggers. Debug it." |
+| [talon-setup-cursorless/](talon-setup-cursorless/) | Installs Cursorless for hat-and-target-style voice editing in VSCode (and Cursor / VSCodium). | "Set up Cursorless so I can edit code by voice." |
 | `talon-settings` | Planned skill for editing Talon settings such as phrase timeout timing, pause lengths between commands, subtitle display, and other configuration values. | "Adjust Talon's end-of-phrase timing and subtitle settings." |
 
 ## SuperWhisper skills
