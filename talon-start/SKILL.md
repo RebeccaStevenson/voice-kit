@@ -67,19 +67,37 @@ Then continue — do **not** ask the user to restart or relaunch.
 
 ### 1. Check What Exists
 
-Look for an existing profile and memory directory. The profile lives inside
-the user's personal Talon repo:
+Detect three independent things:
+
+**(a) Is Talon installed at all?** Look for the REPL binary and the user
+directory:
 
 ```bash
-ls ~/.talon/user/
+[ -x "$TALON_HOME/bin/repl" ] && echo "talon: installed" || echo "talon: not installed yet"
+ls "$TALON_HOME/user/" 2>/dev/null
 ```
 
-Identify the user's custom repo (the folder that is NOT `community`,
-`rango-talon`, `cursorless-talon`, `parrot`, or any other well-known shared
-repo). Then check for:
+If `~/.talon/bin/repl` is missing **and** `~/.talon/user/` is empty or
+missing, Talon is not installed yet. This is the **normal first-run state**
+for a brand-new user — do not treat it as an error. Set `<user_repo>` to
+`TBD` everywhere in the templates below; `talon-create-custom-repo` will
+fill it in later. Briefly tell the user:
+
+> "Talon isn't installed on this machine yet — that's fine, it's the next
+> step. I'll set up your assistant profile first so the install skill can
+> adapt to your experience level."
+
+**(b) Identify the custom repo (only if Talon is installed).** From the
+`ls ~/.talon/user/` output, the custom repo is the folder that is NOT
+`community`, `rango-talon`, `cursorless-talon`, `parrot`, `talon-ai-tools`,
+or any other well-known shared repo. If only well-known repos exist, set
+`<user_repo>` to `TBD` (same as the not-installed case) — the user has
+Talon but hasn't created a personal repo yet.
+
+**(c) Has the profile already been created?**
 
 ```bash
-ls ~/.talon/talon-assistant/
+ls "$TALON_HOME/talon-assistant/" 2>/dev/null
 ```
 
 If `talon-assistant/profile.md` already exists, read it, greet the user by
@@ -244,13 +262,14 @@ without re-reading every skill file. Use the Write tool to create
 ## Environment
 
 - **OS:** <os> (do not generate cross-platform variants unless asked — write commands and paths for `<os>`)
+- **Talon install state:** <installed | not-installed-yet>
 - **Talon user directory:** `~/.talon/user/`
-- **Custom scripts go in:** `~/.talon/user/<user_repo>/` — never in upstream repos
-- **Upstream repos (read-only):** community, rango-talon, cursorless-talon, parrot, talon-ai-tools
-- **Talon log:** `~/.talon/talon.log`
-- **Talon REPL:** `~/.talon/bin/repl`
+- **Custom scripts go in:** `~/.talon/user/<user_repo>/` — never in upstream repos. If `<user_repo>` is `TBD`, run `talon-create-custom-repo` before writing any custom scripts.
+- **Upstream repos (read-only):** community, rango-talon, cursorless-talon, parrot, talon-ai-tools (each may or may not be cloned yet)
+- **Talon log:** `~/.talon/talon.log` (only exists once Talon has run at least once)
+- **Talon REPL:** `~/.talon/bin/repl` (only exists after Talon is installed)
 - **Talon auto-reloads** `.talon` and `.py` files on save — no restart needed
-- **Speech engine:** Conformer (enabled via Talon menu bar → Speech Recognition)
+- **Speech engine:** Conformer (enabled via Talon menu bar → Speech Recognition, post-install)
 
 ## Command Naming Convention
 
