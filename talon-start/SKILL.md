@@ -332,15 +332,26 @@ detail into this file (it goes stale when skills are updated upstream).
 3. **Test after creating** — Python commands always go through the full
    5-step talon-test-and-debug checklist.
 4. **Never edit upstream repos** — all custom work belongs in `<user_repo>/`.
-5. **Update memory.md** — after creating commands, log them in
-   `talon-assistant/memory.md` (voice phrase, file path, date).
+5. **Update memory.md (agent-learned)** — after creating commands, log
+   them in `talon-assistant/memory.md` (voice phrase, file path, date).
+   `memory.md` is **agent-learned**: the agent appends new terms,
+   commands, and notes here as they come up in conversation.
 6. **Same quality for all levels** — proficiency only changes explanation
    depth and tone, never the quality of commands or file structure.
-7. **Check for user-context.md** — if
+7. **Check for user-context.md (user-authored)** — if
    `~/.talon/talon-assistant/user-context.md` exists, read it alongside the
    profile so user-supplied vocabulary, word replacements, and paths can
    inform commands, examples, and explanations. Interpret it in context;
-   it is intentionally free-form, not a schema.
+   it is intentionally free-form, not a schema. **Never rewrite, trim, or
+   restructure this file** — it is the user's. If a term needs
+   clarification, ask the user to update it themselves rather than editing
+   it on their behalf.
+
+   **Source of truth when memory.md and user-context.md overlap:** if a
+   term appears in both, `user-context.md` wins (the user wrote it
+   deliberately). When the agent learns a clarification or correction,
+   write it to `memory.md`'s Notes section and tell the user — don't
+   silently overwrite either file.
 
 ## Proficiency Adaptation Quick Reference
 
