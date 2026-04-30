@@ -57,6 +57,12 @@ After installing, restart your agent so it reloads the skill list.
 
 ## Voice control skills
 
+The Talon skills below distill setup, customization, and debugging
+guidance from the [Talon Community Wiki](https://talon.wiki/) into
+on-demand, agent-driven workflows. The wiki is the source of truth —
+when a skill points the user at further reading, it links to the wiki
+rather than paraphrasing.
+
 | Skill | What it does | Example request |
 |---|---|---|
 | [talon-start/](talon-start/) | Creates a user profile so later Talon help can match the user’s experience level. | "Set up the Talon assistant for me." |
