@@ -28,17 +28,18 @@ access. Use absolute paths for all operations:
 Claude Code can be launched from any directory — do not ask the user to
 relaunch.
 
-## Read the User Profile
+## Bootstrap (FIRST STEP)
 
-Before starting, discover the user's custom repo name (see the **talon-create-command** skill for the full discovery step). Then check for a profile at `~/.talon/talon-assistant/profile.md`. If it exists, read it and adapt:
+Run the shared bootstrap to discover `<user_repo>` and load the proficiency
+profile:
 
-- **Beginner (Talon):** Explain what each testing step does and why. Walk through log output and REPL commands in detail.
-- **Intermediate (Talon):** Brief explanations; focus on results.
-- **Advanced (Talon):** Just show commands and results — skip the "why."
-- **None / Basic (Coding):** Explain pytest concepts, what assertions mean, and how to read test output.
-- **None (Git):** If debugging involves checking git status or diffs, explain the commands.
+```bash
+cat ~/.claude/skills/talon-create-command/references/bootstrap.md
+```
 
-If no profile exists, default to intermediate-level explanations.
+If invoked automatically by **talon-create-command**, the bootstrap has
+already run — skip it and jump to the relevant checklist step using the
+files that were just created.
 
 ## Diagnose First, Ask Second
 
@@ -151,65 +152,21 @@ def test_edge_case():
 
 Since tests run outside Talon, you need stubs to mock Talon's APIs. If the user's repo has a `tests/stubs/` directory, explain that it already provides mocks for `actions`, `Module`, `Context`, `clip`, `app`, and `ui`.
 
-If no stubs exist yet, help create a minimal stub:
+If no stubs exist yet, copy the minimal template into the user repo:
 
-```python
-# tests/stubs/talon/__init__.py
-class Module:
-    def action_class(self, cls):
-        return cls
-    def tag(self, name, desc=""):
-        pass
-    def list(self, name, desc=""):
-        pass
-    def setting(self, name, **kwargs):
-        pass
-
-class Context:
-    matches = ""
-    lists = {}
-    def action_class(self, path):
-        def decorator(cls):
-            return cls
-        return decorator
-
-class actions:
-    @staticmethod
-    def insert(text): pass
-    @staticmethod
-    def key(keys): pass
-    @staticmethod
-    def sleep(duration): pass
-    class edit:
-        @staticmethod
-        def selected_text(): return ""
-        @staticmethod
-        def copy(): pass
-        @staticmethod
-        def paste(): pass
-    class app:
-        @staticmethod
-        def notify(title, body=""): pass
-
-class app:
-    platform = "mac"
-    notifications = []
-    @staticmethod
-    def notify(title, body=""):
-        app.notifications.append((title, body))
-
-class clip:
-    _text = ""
-    @staticmethod
-    def text(): return clip._text
-    @staticmethod
-    def set_text(t): clip._text = t
+```bash
+mkdir -p ~/.talon/user/<user_repo>/tests/stubs/talon
+cp ~/.claude/skills/talon-test-and-debug/references/test-stubs-template.py \
+   ~/.talon/user/<user_repo>/tests/stubs/talon/__init__.py
 ```
+
+The template covers `Module`, `Context`, `actions`, `app`, and `clip`. Add
+mocks for additional Talon APIs only as the tests need them.
 
 #### Running Tests
 
 ```bash
-cd ~/.talon && cd user/YOUR_REPO && python -m pytest tests/ -v
+cd ~/.talon/user/<user_repo> && python -m pytest tests/ -v
 ```
 
 Quick filter by keyword:
@@ -239,14 +196,31 @@ The final check — actually speak the command:
 
 | Command | What it does |
 |---|---|
-| `sim("phrase")` | Show which rule handles a phrase |
-| `mimic("phrase")` | Actually execute a command (use carefully!) |
+| `sim("phrase")` | Show which rule handles a phrase (read-only) |
+| `mimic("phrase")` | Actually execute the command — see warning below |
 | `actions.find("keyword")` | Search actions by name, shows source code |
 | `actions.list("user.prefix")` | List all actions with a prefix |
 | `events.tail()` | Live stream of all Talon events |
 | `registry.commands` | All commands active in current context |
 | `registry.lists` | All active lists and their contents |
 | `settings.list()` | All available settings |
+
+### `mimic()` Warning
+
+`mimic("phrase")` runs the command **for real, in the currently focused
+app** — exactly as if the user had spoken it. That means:
+
+- It can trigger destructive actions (delete file, close window, send
+  message, run shell commands) with no undo.
+- The REPL is not the focused app, so the command fires wherever focus
+  *actually* is — often not where you expect.
+- Context-gated commands resolve against the focused app's context, not
+  the one you had in mind when typing.
+
+Default to `sim()` for routing checks. Reach for `mimic()` only when (a)
+you've already verified the route with `sim()`, (b) the command is safe
+to actually execute, and (c) you control which app is focused (e.g., via
+a `time.sleep()` + manual switch).
 
 ### REPL Tips
 

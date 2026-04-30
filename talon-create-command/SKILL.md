@@ -30,33 +30,16 @@ access. Use absolute paths (`$HOME/.talon/user/...`, `$HOME/.talon/bin/repl`)
 for all file operations and commands. Claude Code can be launched from any
 directory — do not ask the user to relaunch.
 
-## Discover Repo & Load Profile (FIRST STEP)
+## Bootstrap (FIRST STEP)
 
-1. **Find the user's custom repo.** List `~/.talon/user/` and identify the
-   folder that is NOT `community`, `rango-talon`, `cursorless-talon`,
-   `parrot`, or any other well-known shared repo.
+Run the shared bootstrap to discover `<user_repo>` and load the proficiency
+profile:
 
-   ```bash
-   ls ~/.talon/user/
-   ```
+```bash
+cat ~/.claude/skills/talon-create-command/references/bootstrap.md
+```
 
-   Store this name as `<user_repo>`. If unclear, ask the user.
-
-2. **Load the profile:**
-
-   ```bash
-   cat ~/.talon/talon-assistant/profile.md
-   ```
-
-   Adapt explanations to the user's proficiency:
-   - **Beginner (Talon):** Explain syntax step by step.
-   - **Intermediate:** Skip basics, explain non-obvious patterns.
-   - **Advanced:** Show code with brief design notes.
-   - **None / Basic (Coding):** Avoid jargon; explain Python concepts.
-   - **Comfortable+ (Coding):** Use standard terminology.
-
-   If no profile exists, offer to run **talon-start** quickly, then resume
-   this skill automatically.
+Follow both steps in that file before continuing.
 
 ## Search Before Creating (MANDATORY)
 
@@ -345,7 +328,11 @@ output summary. Fix any issues before reporting success.
 
 ## Output Format
 
-When done, ALWAYS format your response as:
+If you auto-invoked **talon-test-and-debug** (Python path), let that skill's
+output template be the final response — it already includes "Commands
+verified" and "Files involved" sections. Do not duplicate them here.
+
+Otherwise (`.talon`-only path), format your response as:
 
 ### Commands summary
 
