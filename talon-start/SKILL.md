@@ -279,89 +279,20 @@ commands.
 
 ## Available Skills
 
-### talon-start
-**Purpose:** Create the user profile and initialize the assistant.
-**When to use:** First-time setup, or when the user says "update my profile."
-**Creates:** `talon-assistant/profile.md`, `talon-assistant/memory.md`,
-`talon-assistant/CLAUDE.md` (this file). Optionally also
-`talon-assistant/user-context.md` if the user imported vocabulary,
-replacements, or paths during onboarding.
+| Skill | Purpose | Trigger |
+|-------|---------|---------|
+| **talon-start** | Create profile and init the assistant | First run; "update my profile" |
+| **talon-setup-talon** | Install Talon and the community command set | "install Talon"; speech engine setup |
+| **talon-create-custom-repo** | Scaffold a personal commands folder | First time writing custom commands |
+| **talon-create-basic-command** | Write `.talon` voice commands | Keyboard shortcuts, text insertion, app actions |
+| **talon-create-python-command** | Write `.talon` + `.py` commands | Need conditional logic, file I/O, clipboard, APIs |
+| **talon-test-and-debug** | 5-step verify/diagnose checklist | After any command; when something doesn't work |
+| **talon-setup-rango** | Install hands-free browser extension | Click links/forms/tabs by voice (optional) |
 
-### talon-setup-talon
-**Purpose:** Step-by-step Talon installation and community command setup.
-**When to use:** User needs to install Talon, enable the speech engine, or
-clone the community repo.
-**Prerequisite:** Profile must exist (run **talon-start** first).
-**Reference doc:** `references/troubleshooting.md` — startup issues, mic
-problems, permissions, common log errors.
-
-### talon-create-custom-repo
-**Purpose:** Create a personal commands folder alongside the community repo.
-**When to use:** User wants to start writing custom commands but doesn't have
-a personal repo yet.
-**Prerequisite:** Talon and community must be installed.
-**Creates:** Directory structure (`apps/`, `core/`, `tags/`, `productivity/`,
-`settings/`, `tests/`, `tests/stubs/`, `docs/`), `.gitignore`,
-`pyproject.toml`, starter `.talon` file; initializes git.
-**Reference doc:** `references/directory-layout.md`
-
-### talon-create-basic-command
-**Purpose:** Write `.talon` files for voice commands — keyboard shortcuts,
-text insertion, app-specific actions.
-**When to use:** User wants a new voice command that doesn't require
-programming logic.
-**Mandatory rules:**
-1. **Search before creating** — always search both the community and user
-   repos for existing commands first. Report: `Searched: community ✓ /
-   <user_repo> ✓`
-2. **Prefer named actions** over raw key presses (`edit.copy()` not
-   `key(cmd-c)`)
-3. **Verify with sim()** after writing the command
-**File placement:** Mirror community structure — `apps/`, `core/`, `tags/`,
-`productivity/`.
-**Reference doc:** `references/syntax-guide.md` — context matchers, captures,
-lists, key names, settings, tags.
-
-### talon-create-python-command
-**Purpose:** Combine `.talon` + `.py` files for commands that need real
-programming logic (if/else, loops, file I/O, clipboard, APIs).
-**When to use:** The command needs conditional logic, data processing,
-reusable helper functions, or system interaction.
-**Mandatory rules:**
-1. **Search before creating** — same as talon-create-basic-command
-2. **Type annotations and docstrings** required on every action
-3. **Always invoke talon-test-and-debug** after writing Python commands
-**Key Talon Python APIs:** `Module`, `Context`, `actions`, `clip`,
-`app.notify()`, `cron`, `ui`, `scope`.
-**Reference doc:** `references/python-api-reference.md` — full API reference,
-common patterns, type annotations cheat sheet.
-
-### talon-test-and-debug
-**Purpose:** Structured 5-step testing checklist to verify commands and
-diagnose failures.
-**When to use:** After creating any command (mandatory for Python), or when a
-command doesn't work.
-**The 5 steps:**
-1. Check `~/.talon/talon.log` for load errors
-2. Verify action registration with `actions.find()`
-3. Test voice routing with `sim()`
-4. Run `pytest` for non-trivial Python logic
-5. Live voice test in the target app
-**Test infrastructure:** Tests go in `<user_repo>/tests/`; Talon API stubs
-live in `<user_repo>/tests/stubs/talon/`.
-**Reference doc:** `references/common-errors.md` — .talon errors, .py errors,
-context issues, log interpretation.
-
-### talon-setup-rango
-**Purpose:** Install the Rango browser extension for hands-free web browsing.
-**When to use:** User wants to click links, fill forms, scroll, or manage
-tabs by voice in the browser.
-**Prerequisite:** Talon and community must be installed.
-**Key concepts:** Hint labels (say `air` to click element A), direct vs
-explicit clicking mode, tab markers, saved references.
-**Supported browsers:** Chrome, Brave, Edge, Vivaldi, Opera, Firefox, Safari.
-**Reference doc:** `references/rango-commands.md` — complete command reference
-grouped by category.
+Invoke any skill by name — Claude Code loads the SKILL.md and its
+`references/` docs on demand. The SKILL.md is the source of truth for
+prerequisites, mandatory rules, and reference docs; do **not** copy that
+detail into this file (it goes stale when skills are updated upstream).
 
 ## Cross-Cutting Rules (All Skills Must Follow)
 
