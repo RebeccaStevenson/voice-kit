@@ -21,9 +21,11 @@ access. Use absolute paths (`$HOME/.talon/user/...`) for all file operations
 and commands. Claude Code can be launched from any directory — do not ask the
 user to relaunch.
 
-<!-- SYNC: This "Discover Repo & Load Profile" block is shared with
-     talon-create-command, talon-create-custom-repo, and talon-setup-rango.
-     Keep all copies in sync when editing. -->
+<!-- This skill runs an existing-repo *check* (different intent) rather
+     than the standard repo *discovery* block used by talon-create-command,
+     talon-setup-rango, talon-setup-cursorless, and talon-test-and-debug.
+     The profile-loading step (#2) mirrors theirs — keep proficiency tips
+     in step 2 in sync if you change them across skills. -->
 
 ## Discover Repo & Load Profile (FIRST STEP — do both before anything else)
 
@@ -37,26 +39,25 @@ Before creating a new repo, check whether the user already has one and whether a
 
    If a personal repo already exists, let the user know — they may not need this skill at all. If they want to start fresh or rename it, continue below.
 
-2. **Load the profile** (if it exists):
+2. **Load the profile.**
 
    ```bash
    cat ~/.talon/talon-assistant/profile.md
    ```
 
-   If the file exists, adapt your explanations for the rest of this session:
-   - **Beginner (Talon):** Explain what each folder and file is for. Walk through terminal commands step by step.
+   Adapt explanations to the user's proficiency:
+   - **Beginner (Talon):** Explain what each folder and file is for. Walk
+     through terminal commands step by step.
    - **Intermediate (Talon):** Brief explanations; focus on the structure.
    - **Advanced (Talon):** Be concise — just show the commands.
-   - **None / Basic (Coding):** Avoid jargon; explain Git and terminal concepts used.
-   - **None (Git):** Explain every Git command before running it. Offer to run them for the user.
+   - **None / Basic (Coding):** Avoid jargon; explain Git and terminal
+     concepts used.
+   - **None (Git):** Explain every Git command before running it. Offer to
+     run them for the user.
 
-   If no profile exists, offer to run setup quickly: "I don't see a profile
-   yet — would you like me to set one up real quick? It's just a few
-   questions and helps me tailor my explanations. Or we can skip it and keep
-   going." If the user says yes, invoke **talon-start** — and when it
-   finishes, resume this skill automatically (don't make the user re-invoke
-   the slash command). If they decline, default to beginner-level
-   explanations to be safe.
+   If no profile exists, offer to run **talon-start** quickly (then resume
+   this skill automatically), or default to beginner-level explanations to
+   be safe.
 
 ## Why a Separate Repo?
 

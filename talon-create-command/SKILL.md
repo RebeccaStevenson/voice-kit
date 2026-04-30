@@ -30,16 +30,45 @@ access. Use absolute paths (`$HOME/.talon/user/...`, `$HOME/.talon/bin/repl`)
 for all file operations and commands. Claude Code can be launched from any
 directory — do not ask the user to relaunch.
 
-## Bootstrap (FIRST STEP)
+<!-- SYNC: This "Discover Repo & Load Profile" block is shared with
+     talon-create-command, talon-setup-rango, talon-setup-cursorless,
+     and talon-test-and-debug. talon-create-custom-repo runs a related
+     but distinct check (existing-repo discovery). Keep all copies in
+     sync when editing. -->
 
-Run the shared bootstrap to discover `<user_repo>` and load the proficiency
-profile:
+## Discover Repo & Load Profile (FIRST STEP — do both before anything else)
 
-```bash
-cat ~/.claude/skills/talon-create-command/references/bootstrap.md
-```
+1. **Find the user's custom repo.** List `~/.talon/user/` and identify the
+   folder that is NOT `community`, `rango-talon`, `cursorless-talon`,
+   `parrot`, or any other well-known shared repo.
 
-Follow both steps in that file before continuing.
+   ```bash
+   ls ~/.talon/user/
+   ```
+
+   Store this name and use it everywhere this skill says `<user_repo>`. If
+   unclear, ask the user once.
+
+2. **Load the profile.**
+
+   ```bash
+   cat ~/.talon/talon-assistant/profile.md
+   ```
+
+   Adapt explanations to the user's proficiency:
+   - **Beginner (Talon):** Explain syntax step by step.
+   - **Intermediate (Talon):** Skip basics; focus on results and
+     non-obvious patterns.
+   - **Advanced (Talon):** Show commands and results with brief design
+     notes; skip the "why."
+   - **None / Basic (Coding):** Avoid jargon; explain Python concepts,
+     type annotations, and how to read errors.
+   - **Comfortable+ (Coding):** Use standard terminology.
+   - **None (Git):** Don't run git commands without explaining them first.
+
+   If no profile exists, offer to run **talon-start** quickly (then resume
+   this skill automatically), or default to intermediate-level
+   explanations.
 
 ## Search Before Creating (MANDATORY)
 

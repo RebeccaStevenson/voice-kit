@@ -28,18 +28,51 @@ access. Use absolute paths for all operations:
 Claude Code can be launched from any directory — do not ask the user to
 relaunch.
 
-## Bootstrap (FIRST STEP)
+<!-- SYNC: This "Discover Repo & Load Profile" block is shared with
+     talon-create-command, talon-setup-rango, talon-setup-cursorless,
+     and talon-test-and-debug. talon-create-custom-repo runs a related
+     but distinct check (existing-repo discovery). Keep all copies in
+     sync when editing. -->
 
-Run the shared bootstrap to discover `<user_repo>` and load the proficiency
-profile:
+## Discover Repo & Load Profile (FIRST STEP — do both before anything else)
 
-```bash
-cat ~/.claude/skills/talon-create-command/references/bootstrap.md
-```
+If invoked automatically by **talon-create-command**, this has already run
+— skip to the relevant checklist step using the files that were just
+created.
 
-If invoked automatically by **talon-create-command**, the bootstrap has
-already run — skip it and jump to the relevant checklist step using the
-files that were just created.
+1. **Find the user's custom repo.** List `~/.talon/user/` and identify the
+   folder that is NOT `community`, `rango-talon`, `cursorless-talon`,
+   `parrot`, or any other well-known shared repo.
+
+   ```bash
+   ls ~/.talon/user/
+   ```
+
+   Store this name and use it everywhere this skill says `<user_repo>`. If
+   unclear, ask the user once.
+
+2. **Load the profile.**
+
+   ```bash
+   cat ~/.talon/talon-assistant/profile.md
+   ```
+
+   Adapt explanations to the user's proficiency:
+   - **Beginner (Talon):** Walk through log output and REPL commands in
+     detail.
+   - **Intermediate (Talon):** Skip basics; focus on results and
+     non-obvious patterns.
+   - **Advanced (Talon):** Show commands and results with brief design
+     notes; skip the "why."
+   - **None / Basic (Coding):** Avoid jargon; explain pytest, what
+     assertions mean, how to read test output.
+   - **Comfortable+ (Coding):** Use standard terminology.
+   - **None (Git):** If debugging touches git status or diffs, explain the
+     commands.
+
+   If no profile exists, offer to run **talon-start** quickly (then resume
+   this skill automatically), or default to intermediate-level
+   explanations.
 
 ## Diagnose First, Ask Second
 
@@ -152,16 +185,12 @@ def test_edge_case():
 
 Since tests run outside Talon, you need stubs to mock Talon's APIs. If the user's repo has a `tests/stubs/` directory, explain that it already provides mocks for `actions`, `Module`, `Context`, `clip`, `app`, and `ui`.
 
-If no stubs exist yet, copy the minimal template into the user repo:
-
-```bash
-mkdir -p ~/.talon/user/<user_repo>/tests/stubs/talon
-cp ~/.claude/skills/talon-test-and-debug/references/test-stubs-template.py \
-   ~/.talon/user/<user_repo>/tests/stubs/talon/__init__.py
-```
-
-The template covers `Module`, `Context`, `actions`, `app`, and `clip`. Add
-mocks for additional Talon APIs only as the tests need them.
+If no stubs exist yet, install the minimal template into the user repo.
+Read this skill's `references/test-stubs-template.py` and write its
+contents to `~/.talon/user/<user_repo>/tests/stubs/talon/__init__.py`
+(creating the directory first). The template covers `Module`, `Context`,
+`actions`, `app`, and `clip`. Add mocks for additional Talon APIs only as
+the tests need them.
 
 #### Running Tests
 

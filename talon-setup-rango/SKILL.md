@@ -21,33 +21,44 @@ and commands. Claude Code can be launched from any directory — do not ask the
 user to relaunch.
 
 <!-- SYNC: This "Discover Repo & Load Profile" block is shared with
-     talon-create-command, talon-create-custom-repo, and talon-setup-rango.
-     Keep all copies in sync when editing. -->
+     talon-create-command, talon-setup-rango, talon-setup-cursorless,
+     and talon-test-and-debug. talon-create-custom-repo runs a related
+     but distinct check (existing-repo discovery). Keep all copies in
+     sync when editing. -->
 
 ## Discover Repo & Load Profile (FIRST STEP — do both before anything else)
 
-1. **Find the user's custom repo.** List `~/.talon/user/` and identify the folder that is NOT `community`, `rango-talon`, `cursorless-talon`, `parrot`, or any other well-known shared repo. The remaining folder is the user's personal repo (e.g., `talon-rebecca`, `talon-john`, `my-commands`, etc.).
+1. **Find the user's custom repo.** List `~/.talon/user/` and identify the
+   folder that is NOT `community`, `rango-talon`, `cursorless-talon`,
+   `parrot`, or any other well-known shared repo.
 
    ```bash
    ls ~/.talon/user/
    ```
 
-   Store this name and use it everywhere this skill says `<user_repo>`. If you can't determine the repo name, ask the user: "What's the name of your personal Talon commands folder?"
+   Store this name and use it everywhere this skill says `<user_repo>`. If
+   unclear, ask the user once.
 
-2. **Load the profile.** Immediately after discovering the repo, read the profile:
+2. **Load the profile.**
 
    ```bash
    cat ~/.talon/talon-assistant/profile.md
    ```
 
-   If the file exists, adapt your explanations for the rest of this session:
-   - **Beginner (Talon):** Explain each concept step by step. Spell out what voice commands will do before suggesting them.
-   - **Intermediate (Talon):** Skip basic explanations; focus on setup steps and useful commands.
-   - **Advanced (Talon):** Be concise — just the install steps and command highlights.
-   - **None / Basic (Coding):** Avoid jargon; explain any technical concepts used.
-   - **None (Git):** Don't include Git commands without explaining them first.
+   Adapt explanations to the user's proficiency:
+   - **Beginner (Talon):** Spell out what each voice command does before
+     suggesting it.
+   - **Intermediate (Talon):** Skip basics; focus on setup steps and
+     useful commands.
+   - **Advanced (Talon):** Be concise — just the install steps and
+     highlights.
+   - **None / Basic (Coding):** Avoid jargon; explain technical concepts
+     when used.
+   - **None (Git):** Don't run git commands without explaining them first.
 
-   If no profile exists, mention: "I don't see a profile yet — you can run the **talon-start** skill to set one up, but we can keep going for now." Then default to intermediate-level explanations.
+   If no profile exists, offer to run **talon-start** quickly (then resume
+   this skill automatically), or default to intermediate-level
+   explanations.
 
 ## Section 1 — Installation
 

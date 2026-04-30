@@ -1,56 +1,62 @@
 # Troubleshooting Talon Setup
 
-## Talon Won't Start
+Quick error → fix lookup. The procedural walkthrough lives in `SKILL.md`;
+this reference is for symptom-to-cause-to-fix matching during debugging.
 
-- **macOS permissions**: Talon requires Accessibility and Microphone permissions. Go to System Settings > Privacy & Security > Accessibility and ensure Talon is listed and enabled. Do the same for Microphone.
-- **Relaunch after permissions**: After granting permissions, quit Talon completely (right-click menu bar icon > Quit) and reopen it.
+## Talon Won't Start / No Menu Bar Icon
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| No icon after launch | macOS hides icons behind the notch | Hover the top-right edge on newer MacBooks |
+| App opened, no icon, no error | Gatekeeper blocked it silently | System Settings → Privacy & Security → **Open Anyway** |
+| Permission popups never appeared | Talon launched before grants | Add Talon manually under Privacy & Security → Accessibility *and* Microphone |
+| Permissions granted but still nothing | Talon needs a relaunch | Quit (right-click icon → Quit, or `killall Talon`) and reopen |
 
 ## Voice Commands Not Recognized
 
-- **Is Talon awake?** Say "wake up". If Talon is asleep, it ignores all commands except wake phrases.
-- **Microphone check**: Right-click the Talon menu bar icon to verify the correct microphone is selected. Note that the system microphone and Talon's microphone are separate settings — even if your system mic is correct, Talon might be listening on a different one.
-- **Background noise**: Talon works best in a reasonably quiet environment. Reduce background noise or move closer to the microphone. A headset mic about 1 inch from your mouth or a table mic 6–12 inches away works best.
-- **Speak naturally**: The Conformer engine handles natural speech well. Avoid over-enunciating — speak at a normal pace and volume. Keep a consistent distance from the mic. Prepare what you want to say before speaking — hesitations and mid-command pauses can confuse the recognizer.
-- **Wrong mode**: Talon has a command mode and a dictation mode. In dictation mode, Talon types out everything you say as text instead of executing commands. If Talon seems to be typing your commands, say `command mode` to switch back.
-- **Commands get cut off**: If Talon only catches the first part of a multi-word command, the speech timeout may be too short. Add `speech.timeout = 0.4` (or higher) in a `settings():` block in a `.talon` file.
-- **Speech engine still downloading**: If Conformer hasn't finished downloading, Talon won't recognize anything yet. Check the Talon menu bar for download progress.
+| Symptom | Cause | Fix |
+|---|---|---|
+| Talon ignores everything | Asleep | Say `wake up` |
+| Speech goes to text instead of running | Dictation mode | Say `command mode` |
+| Multi-word commands clip mid-phrase | `speech.timeout` too tight | Set `speech.timeout = 0.4` (or higher in 0.1s steps) in a `settings():` block — see **talon-customize-settings** |
+| Wrong mic active | Talon's mic ≠ system mic | Right-click menu bar icon → check mic selection |
+| Recognition slow / inaccurate at start | Conformer model still downloading | Check menu bar for download progress |
+| Frequent misrecognition | Background noise or mic distance | Headset mic ~1 in from mouth, or table mic 6–12 in; speak naturally without over-enunciating |
 
-See also: [Troubleshooting](https://talon.wiki/Resource%20Hub/Speech%20Recognition/troubleshooting) and [Improving Recognition Accuracy](https://talon.wiki/Resource%20Hub/Speech%20Recognition/improving_recognition_accuracy) on the Talon wiki.
+Wiki references: [Troubleshooting](https://talon.wiki/Resource%20Hub/Speech%20Recognition/troubleshooting),
+[Improving Recognition Accuracy](https://talon.wiki/Resource%20Hub/Speech%20Recognition/improving_recognition_accuracy).
 
 ## Community Commands Not Loading
 
-- **Wrong directory**: The community folder must be at `~/.talon/user/community/`. A common mistake is cloning it one level too deep (e.g., `~/.talon/user/community/community/`).
-- **Check the log**: Right-click the Talon menu bar icon > Scripting > View Log. Look for `ERROR` lines mentioning file paths.
-- **Verify with terminal**:
-  ```bash
-  ls ~/.talon/user/community/
-  ```
-  You should see folders like `core/`, `plugin/`, `apps/`, and files like `README.md`.
+| Symptom | Cause | Fix |
+|---|---|---|
+| `help alphabet` does nothing | Wrong directory layout | `ls ~/.talon/user/community/` should show `core/`, `plugin/`, `apps/` |
+| `community/community/` exists | Cloned one level too deep | Move contents up a level |
+| Log shows `ERROR` mentioning community paths | Syntax error after a local edit | Revert local edits; community is meant to be read-only |
 
 ## Rango Hints Not Showing
 
-- **Extension enabled?** Check your browser's extension settings and make sure Rango is turned on.
-- **Safari extra step**: Safari > Preferences > Extensions > Rango > check "Always Allow on Every Website".
-- **Rango-talon installed?** The browser extension alone is not enough — the Talon commands must also be installed:
-  ```bash
-  ls ~/.talon/user/rango-talon/
-  ```
-- **Refresh the page**: Some pages need a refresh after installing the extension for hints to appear.
+| Symptom | Fix |
+|---|---|
+| No hints on any page | Confirm the Rango extension is enabled in the browser's extension settings |
+| Safari, no hints | Safari → Preferences → Extensions → Rango → **Always Allow on Every Website** |
+| Extension on, still nothing | Verify `~/.talon/user/rango-talon/` exists |
+| Hints missing on one tab | Refresh the page after install |
 
 ## Common Log Errors
 
-Open the log with: right-click Talon menu bar icon > Scripting > View Log (or say `talon open log`).
+Open the log with `talon open log`, or right-click the menu bar icon → Scripting → View Log.
 
-| Error | Meaning | Fix |
+| Log line | Meaning | Fix |
 |---|---|---|
-| `[+] /path/to/file.py` | File loaded successfully | No action needed |
-| `[-] /path/to/file.py` | File was unloaded (usually before a reload) | Normal behavior |
-| `ERROR ... CompileError` | Syntax error in a .talon file | Check the file path and line number in the error |
-| `ERROR ... ImportError` | Python import failed | A .py file has a missing dependency or typo |
-| `ActionProtoError` | Action signature mismatch | Check that the action's parameters match its declaration |
+| `[+] /path/to/file.py` | File loaded successfully | None |
+| `[-] /path/to/file.py` | File unloaded (usually before a reload) | None |
+| `ERROR ... CompileError` | Syntax error in a `.talon` file | Check the file path and line number printed in the error |
+| `ERROR ... ImportError` | Python import failed | A `.py` file has a missing dependency or typo |
+| `ActionProtoError` | Action signature mismatch | Confirm parameters match the action's declaration |
 
 ## Getting Help
 
-- **Talon Slack**: Join at https://talonvoice.com/chat — the `#help` channel is very active and welcoming
-- **Talon Wiki**: Community documentation at https://talon.wiki/
-- **Community GitHub**: https://github.com/talonhub/community/issues for bug reports
+- **Talon Slack**: <https://talonvoice.com/chat> — `#help` is active and welcoming
+- **Talon Wiki**: <https://talon.wiki/>
+- **Community GitHub**: <https://github.com/talonhub/community/issues>
