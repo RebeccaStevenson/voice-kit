@@ -2,13 +2,15 @@
 name: talon-customize-settings
 description: >
   Add or update Talon settings like vocabulary, words to replace, websites,
-  search engines, subtitles, and system paths. Use when the user wants to
-  customize Talon settings after initial setup — e.g., "add a word to
-  vocabulary", "add a website", "change subtitle size", "Talon keeps
-  misspelling a name", "how do I add a search engine", "update my
-  settings", or any request to modify Talon's word lists, display
-  preferences, or path aliases. Do NOT use for creating voice commands —
-  that's talon-create-command.
+  search engines, subtitles, system paths, and speech recognition tuning
+  (timeout, alphabet/modifier alternates, remapping problem commands). Use
+  when the user wants to customize Talon settings after initial setup —
+  e.g., "add a word to vocabulary", "add a website", "change subtitle
+  size", "Talon keeps misspelling a name", "Talon cuts me off
+  mid-command", "I can't say 'sit'", "remap the touch command", or any
+  request to modify Talon's word lists, display preferences, path aliases,
+  or recognition behavior. Do NOT use for creating voice commands — that's
+  talon-create-command.
 ---
 
 # Customize Talon Settings
@@ -59,6 +61,9 @@ setting:
 | "add a search engine", "search [site] by voice" | Search engines |
 | "turn off subtitles", "change subtitle size", "move subtitles" | Subtitles / display |
 | "add a folder", "system paths", "path alias" | System paths |
+| "Talon cuts me off mid-command", "phrase timeout", "end of phrase too fast" | Speech timeout |
+| "I can't say 'sit'", "alphabet alternative", "trouble saying 'control'" | Alphabet / modifier alternates |
+| "remap a community command", "stop the X command from firing", "rebind touch" | Replace a problem command |
 
 If it's not clear which setting they need, ask:
 
@@ -197,6 +202,86 @@ folders on their computer.
    header `list: user.system_paths` and `-` separator)
 4. Confirm: "Added [paths]."
 
+### Speech Timeout
+
+**When to use:** Talon cuts the user off before they finish a phrase, or
+splits one command into two. This is the single most impactful recognition
+setting and the first thing to try if commands are firing partially.
+
+**File:** A `.talon` file in `<user_repo>/settings/` (e.g., `settings.talon`)
+with a `settings():` block. No context header — the setting applies
+globally.
+
+**Steps:**
+1. Read the existing file (if any) to see the current value
+2. Default Talon timeout is fairly tight; a good starting point is `0.4`
+   seconds. Raise in 0.1s steps if commands are still being clipped.
+3. Write or update the block:
+
+   ```talon
+   settings():
+       speech.timeout = 0.4
+   ```
+
+4. Confirm: "Set `speech.timeout` to 0.4s. Talon picks this up
+   immediately. If commands still cut off, bump it to 0.5 or 0.6 — but
+   higher values make Talon feel laggier, so go in small increments."
+
+### Alphabet / Modifier Alternates
+
+**When to use:** Talon mishears a specific letter or modifier consistently
+— e.g., "sit" for the letter S, or "control" sounding like "patrol." The
+community ships alternative phonics for both.
+
+**File:** Edit the existing alphabet/modifier definitions in the community
+repo via override. The cleanest pattern is to redefine the offending entry
+in the user's personal repo so it takes precedence, rather than modifying
+community files.
+
+**Steps:**
+1. Confirm which letter or modifier is misrecognizing. Ask the user to say
+   it a few times and check `command history` or the log.
+2. Pick a replacement word that's phonetically distinct. The wiki suggests
+   `ivy` for S (instead of `sit`) and `troll` for ctrl (instead of
+   `control`), but any clear, unambiguous word works.
+3. In the user's repo, override the relevant list. For example, to swap
+   the spoken form of the letter S to `ivy`, find the community alphabet
+   list, copy the relevant entry into a `.talon-list` in the user repo
+   with the override, and confirm via `help alphabet`.
+4. Confirm: "Replaced spoken form for [letter/modifier]. Try saying [new
+   word] to test."
+
+If the user is uncertain which letters cause them trouble, suggest they
+run through the training page (`resources/talon-training.html`) — it
+surfaces problem letters quickly.
+
+### Replace a Problem Command
+
+**When to use:** A community command keeps misfiring or has a phrase that
+collides with the user's accent or vocabulary. The wiki's recommended fix
+is to find every occurrence in `.talon` files and replace the phrase with
+something less ambiguous.
+
+**Steps:**
+1. Identify the command. Use `command history` to see what was actually
+   recognized, or `help search <phrase>` to find which file defines it.
+2. Search community for occurrences:
+
+   ```bash
+   grep -rn "the offending phrase" "$TALON_HOME/user/community/"
+   ```
+
+3. **Don't edit community.** Instead, in the user's repo, redefine the
+   command with the same context header but a new spoken phrase. The
+   more-specific or later-loaded definition wins; if both files have
+   identical context, add a hostname matcher to the user override.
+4. Confirm: "Rebound `[old phrase]` → `[new phrase]` in `<user_repo>/...`.
+   The community version is unchanged so updates pull cleanly."
+
+If the user just wants to *disable* a community command rather than rename
+it, redefine it in the user repo with an empty body or a `#` no-op, with
+the same caveat about context specificity.
+
 ## After Making Changes
 
 After completing a change, briefly remind the user of the voice command
@@ -210,5 +295,8 @@ they can use next time to make similar changes themselves:
 | Search engines | `customize search engines` |
 | Subtitles | Edit the settings file or `customize settings` |
 | System paths | Edit the settings file directly |
+| Speech timeout | `customize settings` |
+| Alphabet / modifier alternates | Edit the override `.talon-list` directly |
+| Replace a problem command | Edit the override `.talon` file directly |
 
 Also mention `help customize` to see all customizable files.

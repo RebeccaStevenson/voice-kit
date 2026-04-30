@@ -135,6 +135,24 @@ say <word>+:
     mode.enable("dictation")
 ```
 
+Anchoring blocks command chaining — an anchored command can't be said
+back-to-back with another command in the same utterance. Only anchor
+when the command must not be triggered as part of a longer phrase
+(typical use: mode switches).
+
+### Reusing the same capture
+
+When a rule references the same capture twice, the body addresses them
+by `_1`, `_2`:
+
+```talon
+join <user.letter> [and] <user.letter>:
+    insert(letter_1 + letter_2)
+```
+
+For `+` repetition (one-or-more), the body gets `<name>_list` plus
+indexed entries.
+
 ## Built-in Captures
 
 | Capture | Matches | Example phrase |
@@ -213,3 +231,28 @@ key(ctrl-t): speech.toggle()
 
 ### Combining
 `key(cmd-shift-alt-p)` — separate modifiers with hyphens
+
+### Repetition, hold/release, passive, key-up
+
+| Form | What it does |
+|---|---|
+| `key(left:5)` | Press the same key N times |
+| `key(ctrl:down)` | Hold the key down (paired with `:up` later) |
+| `key(ctrl:up)` | Release a previously-held key |
+| `key(f9:passive)` | Bind without blocking the key from other apps |
+| `key(f9:up)` | Trigger on key release instead of press |
+
+## Sleep Duration Formats
+
+`sleep()` accepts:
+
+| Form | Meaning |
+|---|---|
+| `sleep(500ms)` | 500 milliseconds |
+| `sleep(2s)` | 2 seconds |
+| `sleep(1m)` | 1 minute |
+| `sleep(0.5)` | 0.5 seconds (bare float) |
+
+`ms` is the right unit for short pauses between key presses. Sleep
+blocks Talon from processing further commands for the duration, so keep
+it short outside of intentional pauses.

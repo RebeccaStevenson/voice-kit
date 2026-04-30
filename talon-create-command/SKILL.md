@@ -186,7 +186,18 @@ Use `key()` only when no named action exists.
 | `app.notify("title")` | Show a notification |
 
 Key modifiers: `cmd`, `ctrl`, `alt`, `shift`. Combine with hyphens:
-`key(cmd-shift-alt-p)`
+`key(cmd-shift-alt-p)`. Other useful forms:
+
+| Form | What it does |
+|---|---|
+| `key(left:5)` | Press the same key N times |
+| `key(ctrl:down)` / `key(ctrl:up)` | Hold a key down, release it later |
+| `key(f9:passive)` | Bind a key without blocking it from other apps |
+| `key(f9:up)` | Trigger on key release instead of press |
+
+`sleep()` accepts `500ms`, `2s`, `1m`, or floats like `0.5`. Use `ms`
+for short pauses between key presses; longer values block Talon from
+processing further commands for the duration.
 
 ### Captures and Lists
 
@@ -205,6 +216,26 @@ open {user.website}:
     user.open_url(user.website)
 ```
 
+**Captures vs lists.** Lists are simple word→value mappings. Captures
+wrap parsing logic and can compose lists with extra rules. Reach for a
+list when the choices are static; reach for a capture when callers may
+want to extend the rule — captures are user-extensible (a downstream
+user can override the rule to add their own alternatives), lists are
+not.
+
+**Reusing the same capture in one rule.** When a rule references the
+same capture more than once, the body refers to them by `_1`, `_2`:
+
+```talon
+join <user.letter> [and] <user.letter>:
+    insert(letter_1 + letter_2)
+```
+
+**Anchoring trade-off.** `^foo` and `foo$` block command chaining — the
+user can't say it back-to-back with another command. Only anchor when
+the command must not be triggered as part of a longer phrase (e.g.,
+mode switches like `^command mode$`).
+
 See `references/syntax-guide.md` for the full list of captures and lists.
 
 ### Overriding Existing Commands
@@ -219,6 +250,39 @@ touch:
     mouse_click(0)
     user.mouse_drag_end()
 ```
+
+### Overriding a Python Action for One App
+
+To replace just an action's *behavior* (not its voice phrase) inside a
+specific app, override it from Python with `@ctx.action_class`:
+
+```python
+from talon import Context, actions
+
+ctx = Context()
+ctx.matches = "app: Emacs"
+
+@ctx.action_class("edit")
+class EditActions:
+    def save():
+        actions.key("ctrl-x ctrl-s")
+```
+
+To **extend** the default rather than replace it (do something extra,
+then fall through to the original behavior), call `actions.next()` from
+inside the override — Talon resolves the next-most-specific
+implementation and runs it:
+
+```python
+@ctx.action_class("edit")
+class EditActions:
+    def save():
+        actions.user.maybe_format_buffer()
+        actions.next()  # falls through to the default edit.save()
+```
+
+This is the right pattern when extending community actions: the
+community version still runs, you just hook in around it.
 
 ## Path B: Python-Scripted Commands
 
