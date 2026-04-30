@@ -42,44 +42,51 @@
 | `script` | string | No | `""` | Post-processing script content. |
 | `scriptEnabled` | boolean | No | `false` | Whether to run the post-processing script. |
 
+### Per-Mode Behavior Overrides (added 2025–2026)
+
+Recent SuperWhisper versions let modes override several formerly-global behaviors. These fields aren't all in the public docs; the names below come from real modes on disk:
+
+- **`autocapitalizeInsert`** (boolean, v2.11.0, Mar 2026) — per-mode override for first-letter capitalization. Set to `false` for code-dictation modes that want all-lowercase output.
+- **`playbackBehavior`** (string, replaces older `pauseMediaPlayback`) — controls media handling during recording. Observed value: `"keepPlaying"`. Other values likely exist; check the UI dropdown.
+- **Auto-paste override** (v2.9.0, Jan 2026) — per-mode toggle. Field name not yet observed on disk; if needed, set in the UI and diff the mode JSON before/after to discover the key.
+- **Per-mode push-to-talk and toggle-recording shortcuts** (v2.12.0, Apr 2026) — a mode can carry its own recording hotkey. Field names not yet observed; same diff-the-JSON discovery path applies.
+
+**Discovery rule**: when adding any of these to a new mode, first read an existing mode in `~/Documents/superwhisper/modes/` to copy the field name and value verbatim. SuperWhisper sometimes drops or renames fields between versions, so on-disk samples beat documentation.
+
 ---
 
 ## Available Language Models
 
-### SuperWhisper Cloud
+### Discovering current model IDs
 
-| Model ID | Speed | Notes |
-|----------|-------|-------|
-| `sw-s1-language` | 10 | SuperWhisper's own model. Fastest option. |
+The authoritative list of currently-available cloud LLMs lives in the user's preferences plist, under `remoteCloudLanguageModels`. Read it with:
 
-### Anthropic Claude (Cloud)
+```bash
+defaults read com.superduper.superwhisper remoteCloudLanguageModels
+```
 
-| Model ID | Speed | Benchmark |
-|----------|-------|-----------|
-| `sw-claude-4p5-sonnet` | 8 | 89 — Good default choice. |
-| `sw-claude-4-sonnet` | 8 | 87 |
-| `sw-claude-3-7-sonnet` | 8 | 85 |
-| `sw-claude-3-5-sonnet` | 8 | 89 |
-| `sw-claude-3-5-haiku` | 9 | 75 — Fast, lightweight. |
+The output is escaped JSON listing every model SuperWhisper has registered for this user, with id, name, speed, accuracy, license, and provider. **This is the source of truth — prefer it over any table here**, which may go stale between SuperWhisper releases.
 
-### OpenAI GPT (Cloud)
+Two ID formats coexist in the wild: a short `sw-<provider>-<model>` form (e.g., `sw-claude-4p5-sonnet`) used in older mode files, and a bare provider-style form (e.g., `claude-sonnet-4-6`, `gpt-5.4-mini`) used in the plist's current model registry. When writing a `languageModelID` into a new mode file, mirror the format used by an existing working mode in `~/Documents/superwhisper/modes/` — don't switch formats mid-stream.
 
-| Model ID | Speed | Benchmark |
-|----------|-------|-----------|
-| `sw-gpt-5` | 7 | 91 — Highest benchmark score. |
-| `sw-gpt-5-mini` | 8 | 87 |
-| `sw-gpt-5-nano` | 9 | 83 |
-| `sw-gpt-4.1` | 7 | 90 |
-| `sw-gpt-4.1-mini` | 8 | 86 |
-| `sw-gpt-4.1-nano` | 9 | 80 |
+### Models observed as of Apr 2026
 
-### Groq (Cloud)
+The plist on a current install (v2.13.2) listed these cloud LLMs:
 
-| Model ID | Speed | Benchmark |
-|----------|-------|-----------|
-| `sw-llama-3-8b` | 10 | 67 — Fastest cloud LLM, lower quality. |
+| Plist ID | Provider | Speed | Accuracy | Notes |
+|----------|----------|-------|----------|-------|
+| `claude-sonnet-4-6` | Anthropic | 9 | 10 | Sonnet 4.6 — current Claude default |
+| `gpt-5.4-mini` | OpenAI | 10 | 9 | Fast small model, high-throughput pipelines |
+| `gpt-5.4-nano` | OpenAI | 10 | 8 | Fastest GPT, classification/extraction |
+| `gpt-5.3-chat-latest` | OpenAI | 10 | 9 | GPT-5.3 instant (same model as ChatGPT) |
+| `gpt-5.2` | OpenAI | 9 | 10 | Highest-accuracy GPT cloud option |
+| `gemini-3-flash-preview` | Google | 9 | 9 | Gemini 3.0 Flash |
+| `gemini-3.1-flash-lite-preview` | Google | 10 | 8 | Cheapest Gemini, fastest lightweight |
+| `grok-4-1-fast-non-reasoning` | xAI | 8 | 9 | Grok 4.1 Fast (non-reasoning variant) |
 
-Model IDs follow the pattern `sw-<provider>-<model>`. New models are added regularly by SuperWhisper — check the app's model picker for the latest available options. All cloud models require a Pro license.
+All require Pro. Older `sw-claude-…` / `sw-gpt-…` IDs may still be accepted by modes but are not the IDs the app currently registers — read the plist to confirm what's installed for the user.
+
+Claude Haiku 4.5 was added Oct 2025 (v2.6.0); Opus 4.5 / 4.6 / 4.7 are available via BYOK as of Apr 2026 (v2.13.2). Their plist IDs depend on whether the user has BYOK configured.
 
 ### Local Models
 
@@ -108,7 +115,11 @@ Local model IDs are UUIDs specific to each installation. To use a local model, c
 
 | Model ID | Notes |
 |----------|-------|
-| `sw-elevenlabs-scribe-v2` | ElevenLabs Scribe v2. Added in v2.11.0. |
+| `sw-elevenlabs-scribe-v2` | ElevenLabs Scribe v2. Added in v2.11.0 (Mar 2026) with realtime support. |
+
+### Local (Nvidia Parakeet Realtime)
+
+Parakeet Realtime offline transcription was added in v2.9.0 (Jan 2026) — fast local + realtime streaming on Apple Silicon. Model ID isn't published; copy from an existing mode or pick from the model picker.
 
 ### Local (Whisper via whisper.cpp)
 
@@ -145,11 +156,12 @@ For custom modes, always use `"type": "custom"` and `"version": 2`.
 
 ## URL Scheme
 
-SuperWhisper supports deep links for mode activation:
+SuperWhisper supports deep links for mode activation and recording:
 ```
-superwhisper://mode?key=<mode-key>
+superwhisper://mode?key=<mode-key>      # switch to a mode
+superwhisper://record                   # toggle recording
 ```
-For example: `superwhisper://mode?key=custom_note`
+For example: `superwhisper://mode?key=custom_note`. The two can be chained from automation tools (Talon, Raycast, Alfred, Apple Shortcuts) to switch mode and start recording in one step.
 
 ---
 
@@ -176,6 +188,8 @@ Good examples should demonstrate:
 ---
 
 ## Full Example: Custom Mode
+
+⚠️ The JSON below is **illustrative, not literal**. Do not write it to disk as-is — SuperWhisper writes mode files in its own serialization style (`"key" : "value"` with space-before-colon, `[\n\n  ]` for empty arrays, `\/` escaped slashes), and Python's compact JSON style can be silently rejected. To create a real mode, use the byte-copy + surgical-Edit workflow described in `SKILL.md` ("Step 1: Clone an existing working mode") rather than serializing this example.
 
 A mode for formatting Slack messages — casual tone, preserves emoji descriptions:
 
