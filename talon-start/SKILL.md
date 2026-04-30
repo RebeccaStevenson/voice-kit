@@ -146,10 +146,37 @@ Provide brief descriptions only if the user asks for clarification:
 - Coding None = don't code; Basic = can read/edit simple scripts; Comfortable = write code regularly; Experienced = coding is core to my work
 - Git None = don't know what it is; Basic = know clone/pull/commit; Comfortable = branches, PRs, conflicts
 
-**Pre-fill what you can:** Check `git config user.name` and
-`git config user.email` for the user's name. If you find it, say "I see your
-name is \<name\> from your computer's settings — should I use that?" rather
-than making them type it.
+**Pre-fill what you can.** The more the agent infers up front, the fewer
+questions the user has to answer. Probe these before sending the
+interview:
+
+```bash
+git config user.name
+git config user.email
+git --version 2>/dev/null   # is git even installed?
+echo "$SHELL"               # zsh / bash / fish
+[ -f "$TALON_HOME/talon.log" ] && tail -n 200 "$TALON_HOME/talon.log"
+```
+
+Use the results as follows:
+
+- **Name** — if `git config user.name` returns a value, confirm it instead
+  of asking: "I see your name is \<name\> from your git config — should I
+  use that?"
+- **Git level** — if `git --version` fails, the user almost certainly
+  answers "None"; pre-select it and offer to walk through installation.
+- **Talon level** — if `$TALON_HOME/talon.log` exists with recent activity,
+  the user is at least past Beginner; pre-select Intermediate and ask them
+  to confirm or downgrade. If Talon is not installed (per Step 1), they
+  are Beginner — pre-select that.
+- **Custom repo** — if Step 1 found exactly one non-shared folder under
+  `~/.talon/user/`, use that as `<user_repo>` without asking. Only ask if
+  there are zero (set `TBD`) or multiple candidates.
+- **OS / shell** — already known from Step 0; do not ask. Mention them in
+  the confirmation summary so the user can correct if wrong.
+
+Phrase confirmations as "I detected X — correct?" rather than open
+questions, so the user can answer with a single yes.
 
 **Note on Git:** This plugin always uses Git for cloning repos and tracking
 changes locally. A **GitHub account is not required** — Git works entirely on
