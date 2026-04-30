@@ -136,8 +136,10 @@ Use **AskUserQuestion** with a single prompt like this:
 > 6. **Custom vocabulary, replacements, or paths** *(optional)* — do you
 >    want me to remember any project names, jargon, homophone fixes
 >    ("right" vs "write"), or frequently-used directories? You can either:
->    - **Paste** the list directly in your reply, or
->    - **Give me a path** to a text file and I'll read it, or
+>    - **Paste** the list directly in your reply (good for a few lines), or
+>    - **Give me a path** to a text file and I'll read it (best for
+>      anything longer — pasting big blocks into a structured question is
+>      awkward), or
 >    - **Skip** — you can always add this later by editing
 >      `~/.talon/talon-assistant/user-context.md`
 
