@@ -38,6 +38,24 @@ cat ~/.talon/talon-assistant/profile.md
 Adapt tone to the user's proficiency level. Advanced users get concise
 responses; beginners get a bit more context.
 
+### Check for User Context
+
+```bash
+cat ~/.talon/talon-assistant/user-context.md 2>/dev/null
+```
+
+This file (created by **talon-start** during onboarding) captures the
+user's vocabulary, words to replace, and named paths. When present, use it
+to:
+
+- Skip suggestions that duplicate entries already imported.
+- Ground examples in the user's own domain (project names, frequently
+  used directories) instead of generic placeholders.
+- Cross-check spellings — if the user mentions a term that appears in
+  `user-context.md`, prefer that exact form.
+
+If the file is absent, continue without it — it's optional context.
+
 ### Find the Personal Repo
 
 ```bash

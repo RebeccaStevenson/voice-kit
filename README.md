@@ -45,11 +45,11 @@ Use the skills in `.agents/skills/` for Talon Voice and SuperWhisper tasks:
 - `talon-start`
 - `talon-setup-talon`
 - `talon-setup-rango`
-- `talon-create-custom-repo`
-- `talon-create-basic-command`
-- `talon-create-python-command`
-- `talon-test-and-debug`
 - `talon-setup-cursorless`
+- `talon-create-custom-repo`
+- `talon-create-command`
+- `talon-customize-settings`
+- `talon-test-and-debug`
 - `superwhisper-assistant`
 ```
 
@@ -69,11 +69,10 @@ rather than paraphrasing.
 | [talon-setup-talon/](talon-setup-talon/) | Walks a beginner through installing Talon, enabling speech recognition, and cloning the community repo. | "Help me get Talon running from scratch." |
 | [talon-setup-rango/](talon-setup-rango/) | Adds Rango so the browser can be controlled by voice. | "Set up browser voice control with Rango." |
 | [talon-create-custom-repo/](talon-create-custom-repo/) | Creates a personal Talon repo so custom commands stay separate from upstream repos. | "Set up my own Talon commands folder." |
-| [talon-create-basic-command/](talon-create-basic-command/) | Creates `.talon` commands for shortcuts, text insertion, and app-specific actions. | "Make a command that pastes my email signature." |
-| [talon-create-python-command/](talon-create-python-command/) | Builds more advanced Talon commands with Python logic and reusable actions. | "Create a Talon action that cleans up selected text." |
+| [talon-create-command/](talon-create-command/) | Creates `.talon` commands and Python-backed actions — from simple keyboard shortcuts to actions with logic. | "Make a command that pastes my email signature." |
+| [talon-customize-settings/](talon-customize-settings/) | Edits vocabulary, words to replace, websites, search engines, subtitles, system paths, speech timeout, and alphabet/modifier alternates. | "Add 'PubMed' to my vocabulary and bump the speech timeout." |
 | [talon-test-and-debug/](talon-test-and-debug/) | Checks logs, REPL output, and tests so broken commands can be diagnosed quickly. | "This command loads but never triggers. Debug it." |
 | [talon-setup-cursorless/](talon-setup-cursorless/) | Installs Cursorless for hat-and-target-style voice editing in VSCode (and Cursor / VSCodium). | "Set up Cursorless so I can edit code by voice." |
-| `talon-settings` | Planned skill for editing Talon settings such as phrase timeout timing, pause lengths between commands, subtitle display, and other configuration values. | "Adjust Talon's end-of-phrase timing and subtitle settings." |
 
 ## SuperWhisper skills
 
