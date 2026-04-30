@@ -28,20 +28,31 @@ need direct filesystem access to `~/.talon/` and the Talon REPL at
 
 ## Instructions
 
-### 0. Ensure ~/.talon/ Exists (do this before anything else)
+### 0. Ensure ~/.talon/ Exists and Detect the Environment
 
 All Talon files live under `~/.talon/`. Before proceeding, make sure it
-exists and resolve its absolute path for use in all later commands:
+exists, resolve its absolute path, and detect the host OS — Talon runs on
+macOS, Linux, and Windows, and several skills need to know which:
 
 ```bash
 TALON_HOME="$HOME/.talon"
 mkdir -p "$TALON_HOME"
-echo "$TALON_HOME"
+case "$(uname -s)" in
+  Darwin*) OS=macOS ;;
+  Linux*)  OS=Linux ;;
+  MINGW*|MSYS*|CYGWIN*) OS=Windows ;;
+  *) OS="$(uname -s)" ;;
+esac
+echo "$TALON_HOME ($OS)"
 ```
 
-Store this absolute path (e.g., `/Users/alex/.talon`) and use it as a prefix
-for **every file operation and command** in this skill. Do not rely on the
+Store both `TALON_HOME` and `OS`. Use the absolute path as a prefix for
+**every file operation and command** in this skill. Do not rely on the
 current working directory — Claude Code may have been launched from anywhere.
+
+Use the detected `OS` to fill in the profile and CLAUDE.md templates, and
+to suppress macOS-only hints (e.g., the Xcode Command Line Tools tip) on
+Linux or Windows.
 
 **Use absolute paths everywhere.** For example:
 - `$TALON_HOME/user/` instead of `user/` or `~/.talon/user/`
@@ -56,19 +67,37 @@ Then continue — do **not** ask the user to restart or relaunch.
 
 ### 1. Check What Exists
 
-Look for an existing profile and memory directory. The profile lives inside
-the user's personal Talon repo:
+Detect three independent things:
+
+**(a) Is Talon installed at all?** Look for the REPL binary and the user
+directory:
 
 ```bash
-ls ~/.talon/user/
+[ -x "$TALON_HOME/bin/repl" ] && echo "talon: installed" || echo "talon: not installed yet"
+ls "$TALON_HOME/user/" 2>/dev/null
 ```
 
-Identify the user's custom repo (the folder that is NOT `community`,
-`rango-talon`, `cursorless-talon`, `parrot`, or any other well-known shared
-repo). Then check for:
+If `~/.talon/bin/repl` is missing **and** `~/.talon/user/` is empty or
+missing, Talon is not installed yet. This is the **normal first-run state**
+for a brand-new user — do not treat it as an error. Set `<user_repo>` to
+`TBD` everywhere in the templates below; `talon-create-custom-repo` will
+fill it in later. Briefly tell the user:
+
+> "Talon isn't installed on this machine yet — that's fine, it's the next
+> step. I'll set up your assistant profile first so the install skill can
+> adapt to your experience level."
+
+**(b) Identify the custom repo (only if Talon is installed).** From the
+`ls ~/.talon/user/` output, the custom repo is the folder that is NOT
+`community`, `rango-talon`, `cursorless-talon`, `parrot`, `talon-ai-tools`,
+or any other well-known shared repo. If only well-known repos exist, set
+`<user_repo>` to `TBD` (same as the not-installed case) — the user has
+Talon but hasn't created a personal repo yet.
+
+**(c) Has the profile already been created?**
 
 ```bash
-ls ~/.talon/talon-assistant/
+ls "$TALON_HOME/talon-assistant/" 2>/dev/null
 ```
 
 If `talon-assistant/profile.md` already exists, read it, greet the user by
@@ -104,23 +133,87 @@ Use **AskUserQuestion** with a single prompt like this:
 >    - **Brief context** — A sentence or two about what's happening under the hood is nice, but keep it short
 >    - **Teach me as we go** — Explain the syntax and structure as it comes up naturally while we build things
 >    - **Deep dive** — I want to really understand how Talon works — show me the internals, the file anatomy, the API
+> 6. **Custom vocabulary, replacements, or paths** *(optional)* — do you
+>    want me to remember any project names, jargon, homophone fixes
+>    ("right" vs "write"), or frequently-used directories? You can either:
+>    - **Paste** the list directly in your reply (good for a few lines), or
+>    - **Give me a path** to a text file and I'll read it (best for
+>      anything longer — pasting big blocks into a structured question is
+>      awkward), or
+>    - **Skip** — you can always add this later by editing
+>      `~/.talon/talon-assistant/user-context.md`
 
 Provide brief descriptions only if the user asks for clarification:
 - Talon Beginner = just installed or learning basics; Intermediate = use daily, customized some things; Advanced = write own commands, know the API
 - Coding None = don't code; Basic = can read/edit simple scripts; Comfortable = write code regularly; Experienced = coding is core to my work
 - Git None = don't know what it is; Basic = know clone/pull/commit; Comfortable = branches, PRs, conflicts
 
-**Pre-fill what you can:** Check `git config user.name` and
-`git config user.email` for the user's name. If you find it, say "I see your
-name is \<name\> from your computer's settings — should I use that?" rather
-than making them type it.
+**Pre-fill what you can.** The more the agent infers up front, the fewer
+questions the user has to answer. Probe these before sending the
+interview:
+
+```bash
+git config user.name
+git config user.email
+git --version 2>/dev/null   # is git even installed?
+echo "$SHELL"               # zsh / bash / fish
+[ -f "$TALON_HOME/talon.log" ] && tail -n 200 "$TALON_HOME/talon.log"
+```
+
+Use the results as follows:
+
+- **Name** — if `git config user.name` returns a value, confirm it instead
+  of asking: "I see your name is \<name\> from your git config — should I
+  use that?"
+- **Git level** — if `git --version` fails, the user almost certainly
+  answers "None"; pre-select it and offer to walk through installation.
+- **Talon level** — if `$TALON_HOME/talon.log` exists with recent activity,
+  the user is at least past Beginner; pre-select Intermediate and ask them
+  to confirm or downgrade. If Talon is not installed (per Step 1), they
+  are Beginner — pre-select that.
+- **Custom repo** — if Step 1 found exactly one non-shared folder under
+  `~/.talon/user/`, use that as `<user_repo>` without asking. Only ask if
+  there are zero (set `TBD`) or multiple candidates.
+- **OS / shell** — already known from Step 0; do not ask. Mention them in
+  the confirmation summary so the user can correct if wrong.
+
+Phrase confirmations as "I detected X — correct?" rather than open
+questions, so the user can answer with a single yes.
 
 **Note on Git:** This plugin always uses Git for cloning repos and tracking
 changes locally. A **GitHub account is not required** — Git works entirely on
 the user's machine. If the user's Git experience is "None", the assistant
 will explain every Git command before running it and offer to run commands on
-the user's behalf. If Git is not installed, help the user install it (on
-macOS: typing `git` in Terminal prompts Xcode Command Line Tools).
+the user's behalf. If Git is not installed, help the user install it —
+install instructions depend on the detected `OS`:
+- **macOS:** typing `git` in Terminal prompts Xcode Command Line Tools.
+- **Linux:** use the system package manager (`apt install git`, `dnf install git`, `pacman -S git`).
+- **Windows:** download from <https://git-scm.com/download/win>.
+
+**Handling the optional vocabulary/paths answer (question 6):**
+
+- If the user **skips**, do not create `user-context.md` — just continue.
+- If the user **pastes** content inline, or **gives you a path** to a text
+  file (read it with the Read tool), write the content **verbatim** to
+  `~/.talon/talon-assistant/user-context.md` with this small header so
+  future sessions know what it is:
+
+  ````markdown
+  # User-Provided Context
+
+  Imported by talon-start on <today's date>. Free-form notes — vocabulary,
+  word replacements, common paths, project names, anything else worth
+  remembering. The agent reads this file alongside `profile.md` and
+  `memory.md` and interprets the contents in context. Edit freely.
+
+  ---
+
+  <verbatim user content goes here>
+  ````
+
+  Do **not** parse the content into a rigid schema or rewrite it into
+  tables. Other skills read this file and pick out what's relevant when
+  they need it — preserving the user's original wording matters.
 
 ### 4. Write the Profile (DO NOT SKIP)
 
@@ -133,6 +226,7 @@ create `~/.talon/talon-assistant/profile.md`:
 
 ## User
 - **Name:** <name>
+- **OS:** <os>
 - **Custom repo:** <user_repo>
 - **Created:** <today's date>
 
@@ -207,17 +301,19 @@ without re-reading every skill file. Use the Write tool to create
 - **Proficiency:** Talon <level> · Coding <level> · Git <level> · Learning depth <level>
 - **Profile file:** `~/.talon/talon-assistant/profile.md`
 - **Memory file:** `~/.talon/talon-assistant/memory.md`
+- **User context (optional):** `~/.talon/talon-assistant/user-context.md` — only present if the user imported vocabulary/replacements/paths during onboarding. Read it on session start if it exists.
 
 ## Environment
 
-- **OS:** macOS (do not generate cross-platform variants unless asked)
+- **OS:** <os> (do not generate cross-platform variants unless asked — write commands and paths for `<os>`)
+- **Talon install state:** <installed | not-installed-yet>
 - **Talon user directory:** `~/.talon/user/`
-- **Custom scripts go in:** `~/.talon/user/<user_repo>/` — never in upstream repos
-- **Upstream repos (read-only):** community, rango-talon, cursorless-talon, parrot, talon-ai-tools
-- **Talon log:** `~/.talon/talon.log`
-- **Talon REPL:** `~/.talon/bin/repl`
+- **Custom scripts go in:** `~/.talon/user/<user_repo>/` — never in upstream repos. If `<user_repo>` is `TBD`, run `talon-create-custom-repo` before writing any custom scripts.
+- **Upstream repos (read-only):** community, rango-talon, cursorless-talon, parrot, talon-ai-tools (each may or may not be cloned yet)
+- **Talon log:** `~/.talon/talon.log` (only exists once Talon has run at least once)
+- **Talon REPL:** `~/.talon/bin/repl` (only exists after Talon is installed)
 - **Talon auto-reloads** `.talon` and `.py` files on save — no restart needed
-- **Speech engine:** Conformer (enabled via Talon menu bar → Speech Recognition)
+- **Speech engine:** Conformer (enabled via Talon menu bar → Speech Recognition, post-install)
 
 ## Command Naming Convention
 
@@ -227,83 +323,20 @@ commands.
 
 ## Available Skills
 
-### talon-start
-**Purpose:** Create the user profile and initialize the assistant.
-**When to use:** First-time setup, or when the user says "update my profile."
-**Creates:** `talon-assistant/profile.md`, `talon-assistant/memory.md`,
-`talon-assistant/CLAUDE.md` (this file).
+| Skill | Purpose | Trigger |
+|-------|---------|---------|
+| **talon-start** | Create profile and init the assistant | First run; "update my profile" |
+| **talon-setup-talon** | Install Talon and the community command set | "install Talon"; speech engine setup |
+| **talon-customize-settings** | Add or update Talon settings (vocabulary, websites, paths, etc.) | "add a word to vocabulary"; "change subtitle size" |
+| **talon-create-custom-repo** | Scaffold a personal commands folder | First time writing custom commands |
+| **talon-create-command** | Write `.talon` and `.talon` + `.py` voice commands | New command of any complexity |
+| **talon-test-and-debug** | 5-step verify/diagnose checklist | After any command; when something doesn't work |
+| **talon-setup-rango** | Install hands-free browser extension | Click links/forms/tabs by voice (optional) |
 
-### talon-setup-talon
-**Purpose:** Step-by-step Talon installation, community command setup, and
-personalization walkthrough.
-**When to use:** User needs to install Talon, enable the speech engine,
-clone the community repo, or personalize settings. Also handles resume —
-reads the `## Setup Progress` table in `profile.md` and picks up where
-the user left off.
-**Prerequisite:** Profile must exist (run **talon-start** first).
-**Reference doc:** `references/troubleshooting.md` — startup issues, mic
-problems, permissions, common log errors.
-
-### talon-customize-settings
-**Purpose:** Add or update Talon settings — vocabulary, words to replace,
-websites, search engines, subtitles, and system paths.
-**When to use:** User wants to modify settings after initial setup. For
-example: "add a word to vocabulary", "Talon keeps misspelling a name",
-"add a website", "change subtitle size." Not for creating voice commands.
-**Prerequisite:** Personal repo must exist.
-
-### talon-create-custom-repo
-**Purpose:** Create a personal commands folder alongside the community repo.
-**When to use:** User wants to start writing custom commands but doesn't have
-a personal repo yet.
-**Prerequisite:** Talon and community must be installed.
-**Creates:** Directory structure (`apps/`, `core/`, `tags/`, `productivity/`,
-`settings/`, `tests/`, `tests/stubs/`, `docs/`), `.gitignore`,
-`pyproject.toml`, starter `.talon` file; initializes git.
-**Reference doc:** `references/directory-layout.md`
-
-### talon-create-command
-**Purpose:** Create voice commands — from simple `.talon` keyboard shortcuts
-to Python-scripted actions with logic. Decides whether Python is needed and
-handles both paths.
-**When to use:** User wants a new voice command of any complexity.
-**Mandatory rules:**
-1. **Search before creating** — always search both the community and user
-   repos for existing commands first. Report: `Searched: community ✓ /
-   <user_repo> ✓`
-2. **Prefer named actions** over raw key presses (`edit.copy()` not
-   `key(cmd-c)`)
-3. **Verify with sim()** after writing the command
-4. **Auto-invoke talon-test-and-debug** for Python commands
-**Reference docs:** `references/syntax-guide.md` (`.talon` syntax),
-`references/python-api-reference.md` (Python API).
-
-### talon-test-and-debug
-**Purpose:** Structured 5-step testing checklist to verify commands and
-diagnose failures.
-**When to use:** After creating any command (mandatory for Python), or when a
-command doesn't work.
-**The 5 steps:**
-1. Check `~/.talon/talon.log` for load errors
-2. Verify action registration with `actions.find()`
-3. Test voice routing with `sim()`
-4. Run `pytest` for non-trivial Python logic
-5. Live voice test in the target app
-**Test infrastructure:** Tests go in `<user_repo>/tests/`; Talon API stubs
-live in `<user_repo>/tests/stubs/talon/`.
-**Reference doc:** `references/common-errors.md` — .talon errors, .py errors,
-context issues, log interpretation.
-
-### talon-setup-rango
-**Purpose:** Install the Rango browser extension for hands-free web browsing.
-**When to use:** User wants to click links, fill forms, scroll, or manage
-tabs by voice in the browser.
-**Prerequisite:** Talon and community must be installed.
-**Key concepts:** Hint labels (say `air` to click element A), direct vs
-explicit clicking mode, tab markers, saved references.
-**Supported browsers:** Chrome, Brave, Edge, Vivaldi, Opera, Firefox, Safari.
-**Reference doc:** `references/rango-commands.md` — complete command reference
-grouped by category.
+Invoke any skill by name — Claude Code loads the SKILL.md and its
+`references/` docs on demand. The SKILL.md is the source of truth for
+prerequisites, mandatory rules, and reference docs; do **not** copy that
+detail into this file (it goes stale when skills are updated upstream).
 
 ## Cross-Cutting Rules (All Skills Must Follow)
 
@@ -314,10 +347,26 @@ grouped by category.
 3. **Test after creating** — Python commands always go through the full
    5-step talon-test-and-debug checklist.
 4. **Never edit upstream repos** — all custom work belongs in `<user_repo>/`.
-5. **Update memory.md** — after creating commands, log them in
-   `talon-assistant/memory.md` (voice phrase, file path, date).
+5. **Update memory.md (agent-learned)** — after creating commands, log
+   them in `talon-assistant/memory.md` (voice phrase, file path, date).
+   `memory.md` is **agent-learned**: the agent appends new terms,
+   commands, and notes here as they come up in conversation.
 6. **Same quality for all levels** — proficiency only changes explanation
    depth and tone, never the quality of commands or file structure.
+7. **Check for user-context.md (user-authored)** — if
+   `~/.talon/talon-assistant/user-context.md` exists, read it alongside the
+   profile so user-supplied vocabulary, word replacements, and paths can
+   inform commands, examples, and explanations. Interpret it in context;
+   it is intentionally free-form, not a schema. **Never rewrite, trim, or
+   restructure this file** — it is the user's. If a term needs
+   clarification, ask the user to update it themselves rather than editing
+   it on their behalf.
+
+   **Source of truth when memory.md and user-context.md overlap:** if a
+   term appears in both, `user-context.md` wins (the user wrote it
+   deliberately). When the agent learns a clarification or correction,
+   write it to `memory.md`'s Notes section and tell the user — don't
+   silently overwrite either file.
 
 ## Proficiency Adaptation Quick Reference
 
@@ -391,6 +440,13 @@ You can update your profile any time by saying "update my profile" or by
 editing any of these files directly.
 ```
 
+If `user-context.md` was created from question 6 of the interview, list it
+as a fourth bullet and update the count to four:
+
+```
+  • user-context.md — vocabulary, replacements, and paths you imported
+```
+
 This plugin also includes an interactive training page for practicing the
 alphabet, spelling, numbers, symbols, and formatters in the browser. Let the
 user know they can ask to "open the training page" anytime to try it.
@@ -432,7 +488,11 @@ it will read the profile you just created and adapt accordingly.
 Every skill in this plugin should, as an early step:
 
 1. Read `~/.talon/talon-assistant/profile.md`
-2. Adapt **tone and detail level** based on what it finds:
+2. Check for `~/.talon/talon-assistant/user-context.md` and read it if
+   present — it holds free-form vocabulary, word replacements, and paths
+   the user imported during onboarding. Interpret it in context (no schema)
+   and use it to ground examples, project paths, and test phrases.
+3. Adapt **tone and detail level** based on what it finds:
 
 | Proficiency | How to adapt |
 |------------|--------------|
