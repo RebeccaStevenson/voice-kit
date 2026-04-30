@@ -332,6 +332,7 @@ commands.
 | **talon-create-command** | Write `.talon` and `.talon` + `.py` voice commands | New command of any complexity |
 | **talon-test-and-debug** | 5-step verify/diagnose checklist | After any command; when something doesn't work |
 | **talon-setup-rango** | Install hands-free browser extension | Click links/forms/tabs by voice (optional) |
+| **talon-setup-cursorless** | Install hat-and-target voice editing for VSCode | Edit code structurally by voice (optional) |
 
 Invoke any skill by name — Claude Code loads the SKILL.md and its
 `references/` docs on demand. The SKILL.md is the source of truth for
@@ -390,6 +391,7 @@ detail into this file (it goes stale when skills are updated upstream).
 talon-start → talon-setup-talon → talon-create-custom-repo → talon-create-command
                                                                     → talon-test-and-debug
                                           → talon-setup-rango (optional)
+                                          → talon-setup-cursorless (optional, VSCode)
                                           → talon-customize-settings (ongoing)
 ```
 
@@ -459,7 +461,8 @@ After the profile is set up, suggest this order for the other skills:
 2. **talon-create-custom-repo** — Set up your personal commands folder
 3. **talon-create-command** — Write your first voice commands (handles both simple and Python-scripted)
 4. **talon-test-and-debug** — Verify commands work and troubleshoot issues
-6. **talon-setup-rango** (optional) — Add hands-free browser control
+5. **talon-setup-rango** (optional) — Add hands-free browser control
+6. **talon-setup-cursorless** (optional, VSCode users) — Add hat-and-target voice editing
 7. **talon-customize-settings** (ongoing) — Update vocabulary, websites, and other settings anytime
 
 You don't have to do them all at once — feel free to jump ahead if you want

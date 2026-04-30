@@ -61,6 +61,35 @@ class ContextActions:
 ctx.lists["user.my_items"] = {"spoken form": "value", "another": "value2"}
 ```
 
+### Extending an action without replacing it
+
+Use `actions.next()` to run the next-most-specific implementation from
+inside an override. This is the right pattern when you want to add
+behavior around a community action rather than replace it:
+
+```python
+ctx = Context()
+ctx.matches = "app: Emacs"
+
+@ctx.action_class("edit")
+class EditActions:
+    def save():
+        actions.user.maybe_format_buffer()
+        actions.next()  # falls through to the default edit.save()
+```
+
+`actions.next()` is also useful for conditional overrides — return early
+without calling it to fully replace, or call it at the end to chain.
+
+### Picking the namespace for `@ctx.action_class`
+
+| Namespace | Use for |
+|---|---|
+| `"user"` | Overriding actions you (or community) declared with `@mod.action_class` |
+| `"edit"` | Overriding built-in `edit.*` actions (copy, paste, save, jump_line, ...) |
+| `"app"` | Overriding `app.*` actions (tab_open, notify, ...) |
+| `"code"` | Overriding language-feature actions used by community voice-coding tags |
+
 ## Actions — Calling Existing Actions
 
 ```python
