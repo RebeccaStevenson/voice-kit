@@ -28,20 +28,31 @@ need direct filesystem access to `~/.talon/` and the Talon REPL at
 
 ## Instructions
 
-### 0. Ensure ~/.talon/ Exists (do this before anything else)
+### 0. Ensure ~/.talon/ Exists and Detect the Environment
 
 All Talon files live under `~/.talon/`. Before proceeding, make sure it
-exists and resolve its absolute path for use in all later commands:
+exists, resolve its absolute path, and detect the host OS — Talon runs on
+macOS, Linux, and Windows, and several skills need to know which:
 
 ```bash
 TALON_HOME="$HOME/.talon"
 mkdir -p "$TALON_HOME"
-echo "$TALON_HOME"
+case "$(uname -s)" in
+  Darwin*) OS=macOS ;;
+  Linux*)  OS=Linux ;;
+  MINGW*|MSYS*|CYGWIN*) OS=Windows ;;
+  *) OS="$(uname -s)" ;;
+esac
+echo "$TALON_HOME ($OS)"
 ```
 
-Store this absolute path (e.g., `/Users/alex/.talon`) and use it as a prefix
-for **every file operation and command** in this skill. Do not rely on the
+Store both `TALON_HOME` and `OS`. Use the absolute path as a prefix for
+**every file operation and command** in this skill. Do not rely on the
 current working directory — Claude Code may have been launched from anywhere.
+
+Use the detected `OS` to fill in the profile and CLAUDE.md templates, and
+to suppress macOS-only hints (e.g., the Xcode Command Line Tools tip) on
+Linux or Windows.
 
 **Use absolute paths everywhere.** For example:
 - `$TALON_HOME/user/` instead of `user/` or `~/.talon/user/`
@@ -126,8 +137,11 @@ than making them type it.
 changes locally. A **GitHub account is not required** — Git works entirely on
 the user's machine. If the user's Git experience is "None", the assistant
 will explain every Git command before running it and offer to run commands on
-the user's behalf. If Git is not installed, help the user install it (on
-macOS: typing `git` in Terminal prompts Xcode Command Line Tools).
+the user's behalf. If Git is not installed, help the user install it —
+install instructions depend on the detected `OS`:
+- **macOS:** typing `git` in Terminal prompts Xcode Command Line Tools.
+- **Linux:** use the system package manager (`apt install git`, `dnf install git`, `pacman -S git`).
+- **Windows:** download from <https://git-scm.com/download/win>.
 
 **Handling the optional vocabulary/paths answer (question 6):**
 
@@ -165,6 +179,7 @@ create `~/.talon/talon-assistant/profile.md`:
 
 ## User
 - **Name:** <name>
+- **OS:** <os>
 - **Custom repo:** <user_repo>
 - **Created:** <today's date>
 
@@ -228,7 +243,7 @@ without re-reading every skill file. Use the Write tool to create
 
 ## Environment
 
-- **OS:** macOS (do not generate cross-platform variants unless asked)
+- **OS:** <os> (do not generate cross-platform variants unless asked — write commands and paths for `<os>`)
 - **Talon user directory:** `~/.talon/user/`
 - **Custom scripts go in:** `~/.talon/user/<user_repo>/` — never in upstream repos
 - **Upstream repos (read-only):** community, rango-talon, cursorless-talon, parrot, talon-ai-tools
