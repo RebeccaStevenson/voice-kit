@@ -2,14 +2,14 @@
 
 ## What this is
 
-Skills and resources for setting up and customizing voice control (Talon Voice) and dictation (SuperWhisper) tools
+Skills and resources for setting up and customizing voice control (Talon Voice) and dictation (SuperWhisper) tools.
+
+The Talon skills distill the [Talon Community Wiki](https://talon.wiki/) into on-demand, agent-driven workflows. Instead of reading the wiki and configuring Talon yourself, you describe what you want and your agent runs the skill — pointing back at the wiki when there's more to read.
 
 ## Who this is for
 
-- People with repetitive strain injury (RSI) or other mobility constraints
-- People that want to set up voice-powered automations for everything from simple keyboard shortcuts to multi-step workflows
-- Parents who want to work while holding babies
-- Non-coders and software engineers and everyone in between
+- People with repetitive strain injury (RSI) or other mobility constraints looking for hands-free ways to use a computer
+- Anyone who wants voice-powered automations, from simple keyboard shortcuts to multi-step workflows
 
 ## What you can do with these skills
 
@@ -24,24 +24,26 @@ Skills and resources for setting up and customizing voice control (Talon Voice) 
 
 ## Install
 
-For agents that support project-local skills, clone this repo and copy the skill folders into `.agents/skills`:
+Tested with [Claude Code](https://claude.com/claude-code) and the [Claude Agent SDK](https://docs.claude.com/en/api/agent-sdk/overview). Should work with any agent that loads project-local skills — if your agent reads from a different folder (e.g. `.agents/skills/`), swap the destination path below to match.
+
+Clone this repo and copy the skill folders into `.claude/skills`:
 
 ```bash
-mkdir -p .agents/skills && \
+mkdir -p .claude/skills && \
 tmpdir="$(mktemp -d)" && \
 git clone --single-branch --depth 1 https://github.com/RebeccaStevenson/voice-kit.git "$tmpdir/voice-kit" && \
-cp -R "$tmpdir/voice-kit"/talon-* "$tmpdir/voice-kit"/superwhisper-assistant .agents/skills/ && \
+cp -R "$tmpdir/voice-kit"/talon-* "$tmpdir/voice-kit"/superwhisper-assistant .claude/skills/ && \
 rm -rf "$tmpdir"
 ```
 
-This copies the actual skill directories into `.agents/skills` so the agent sees each skill as a direct child directory with its own `SKILL.md`.
+This copies the actual skill directories into `.claude/skills` so the agent sees each skill as a direct child directory with its own `SKILL.md`.
 
-Then add a short note to your `AGENTS.md` telling the agent to use these skills for Talon Voice and SuperWhisper tasks. For example:
+Then add a short note to your `CLAUDE.md` telling the agent to use these skills for Talon Voice and SuperWhisper tasks. For example:
 
 ```md
 ## Voice-Kit skills
 
-Use the skills in `.agents/skills/` for Talon Voice and SuperWhisper tasks:
+Use the skills in `.claude/skills/` for Talon Voice and SuperWhisper tasks:
 - `talon-start`
 - `talon-setup-talon`
 - `talon-setup-rango`
@@ -55,13 +57,17 @@ Use the skills in `.agents/skills/` for Talon Voice and SuperWhisper tasks:
 
 After installing, restart your agent so it reloads the skill list.
 
+## Quickstart
+
+These skills give your coding agent (Claude Code, etc.) the know-how to set up and customize Talon and SuperWhisper on your machine. After installing the skills, ask the agent for help in plain language — for example:
+
+> "Help me install Talon on my Mac."
+
+The agent picks up the `talon-setup-talon` skill and walks you through downloading Talon, configuring your mic, and adding a starter set of voice commands. Every request in the table above triggers a skill the same way — describe the goal and the right skill activates.
+
 ## Voice control skills
 
-The Talon skills below distill setup, customization, and debugging
-guidance from the [Talon Community Wiki](https://talon.wiki/) into
-on-demand, agent-driven workflows. The wiki is the source of truth —
-when a skill points the user at further reading, it links to the wiki
-rather than paraphrasing.
+The wiki is the source of truth — when a skill points you at further reading, it links to the wiki rather than paraphrasing.
 
 | Skill | What it does | Example request |
 |---|---|---|
@@ -79,7 +85,6 @@ rather than paraphrasing.
 | Skill | What it does | Example request |
 |---|---|---|
 | [superwhisper-assistant/](superwhisper-assistant/) | Installs SuperWhisper, configures models, and creates or edits custom mode JSON files. | "Create a SuperWhisper mode for editing emails." |
-| `voice-memo-transcriber` | Planned skill for turning voice memos into transcripts, summaries, and action items. | "Transcribe my latest voice memos and pull out tasks." |
 
 ## Resource links
 
