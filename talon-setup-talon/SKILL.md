@@ -377,139 +377,63 @@ AskUserQuestion({
 Process the selected options in the order listed above (vocabulary first,
 system paths last). Skip any options the user didn't select.
 
-### Walk Through Each Choice
+### Walk Through Each Choice — Delegate to talon-customize-settings
 
-Process the user's selections in order. For each one:
-1. Ask a short, conversational question to collect entries
-2. Write them to the correct file
-3. Update the progress table in `profile.md` (mark the row `done` with
-   today's date)
-4. Confirm what was added
-5. Move to the next choice (or ask if they want to continue)
+The per-setting logic — file paths, duplicate-checking against
+community defaults, URL construction, list-header creation, and the
+matching Setup Progress row update — all lives in
+**talon-customize-settings**. Do not duplicate that logic here. For
+each option the user picked, run the customize-settings flow for that
+setting type, then come back here for the next one.
 
-**Important:** The agent writes the files directly. Do not ask the user to
-open a text editor or edit files themselves.
+**Process options in this order** (most-impactful first):
 
-If the user says "skip", "nothing right now", or "I don't have any" for an
-option, mark it `skipped` in the progress table and move to the next one
-without commentary.
+1. Vocabulary
+2. Words to replace
+3. Websites
+4. Search engines
+5. Subtitles / display
+6. System paths
 
-When presenting the menu, check the progress table first. If some
-personalization options are already marked `done`, show which ones are
-complete and only offer the remaining options.
+**Onboarding-specific behaviour to layer over the customize-settings
+flow:**
 
-#### Vocabulary
-
-**Ask:** "What words would you want Talon to recognize more reliably?
-These are usually things like software names, project names, or technical
-terms — anything Talon doesn't know yet. For example, if Talon keeps
-stumbling on a word like `SuperWhisper`, that's a good one to add."
-
-**After the user responds:**
-- Append each word (one per line) to
-  `<user_repo>/settings/vocabulary.talon-list`
-- For words with specific capitalization (brand names, acronyms), use the
-  `spoken: Written` format — e.g., `superwhisper: SuperWhisper` or
-  `pubmed: PubMed`. For plain terms that just need recognition, use the
-  word alone.
-- If the file doesn't exist, create it with header `list: user.vocabulary`
-  followed by a `-` separator line, then the entries
-- Check the existing file first to avoid adding duplicates
-- Confirm: "Added [words]. Talon will pick these up automatically — no
-  restart needed. Try saying one of the new words to verify."
-
-#### Words to Replace
-
-**Ask:** "What words does Talon keep getting wrong for you? This is for
-words Talon hears correctly but spells the wrong way. For example, if
-someone's name is spelled `Ryon` but Talon always writes `Ryan`, you'd
-add that here."
-
-**After the user responds:**
-- Append each pair as `correct,incorrect` to
-  `<user_repo>/settings/words_to_replace.csv`
-- **Column order matters:** the word you *want* written comes first, the
-  misrecognized spelling comes second. For example, `Ryon,Ryan` means
-  "when Talon writes Ryan, replace it with Ryon."
-- Check the existing file first to avoid adding duplicates
-- Confirm: "Added [pairs]. Next time Talon hears [incorrect], it'll write
-  [correct] instead."
-
-#### Websites
-
-**Ask:** "What websites would you want to open by voice? Give me a short
-name and the URL for each one. Once they're added, you can say things like
-`open gmail` and the browser will go straight there."
-
-**After the user responds:**
-- Append each entry as `spoken name: https://...` to the websites
-  `.talon-list` file in the user's settings
-- Confirm: "Added [sites]. Try saying `open [name]` to test it."
-
-**Note:** Check both the community defaults and the user's existing personal
-settings before adding duplicates. Community defaults are at:
-`$TALON_HOME/user/community/core/websites_and_search_engines/website.talon-list`
-(includes gmail, github, youtube, google, wikipedia, etc.)
-
-**URL lookup:** The user will often just give a name (e.g. "Notion") without
-the URL. Look up or construct the URL yourself — don't make them find it.
-For example, "Notion" → `https://notion.so`.
-
-#### Search Engines
-
-**Ask:** "Are there any searches you use a lot that you'd want to run by
-voice? The community already includes google, amazon, scholar, wiki, and
-map. But if you use something like PubMed or Stack Overflow, you could add
-those — then you'd say something like `pubmed hunt reversal learning` and
-it opens the search results."
-
-**After the user responds:**
-- Check both community defaults and the user's existing personal settings
-  to avoid adding duplicates
-- Append each entry as `spoken name: https://...%s` to the search engines
-  `.talon-list` file in the user's settings
-- Confirm: "Added [engines]. Try saying `[name] hunt [your query]` to
-  test it."
-
-**URL construction:** The user will usually just say a name like "PubMed" or
-"Stack Overflow." Construct the search URL yourself — the `%s` is where the
-query goes. For example, "PubMed" →
-`https://pubmed.ncbi.nlm.nih.gov/?term=%s`.
-
-#### Subtitles / Display Preferences
-
-**Ask:** "Do you want subtitles on, off, or adjusted? There are two
-subtitle systems: Talon's built-in subtitles (toggled from the Talon menu
-bar), and a community plugin that's more customizable — you can change the
-font size and position on screen."
-
-**Based on the user's response:**
-- If **off entirely:** Create or update a `.talon` file with a
-  `settings():` block setting `user.subtitles_show = false`. Mention they
-  can also turn off Talon's built-in subtitles from the menu bar under
-  Speech Recognition → Show Subtitles. **Always mention** that if they
-  change their mind later, the community plugin can be adjusted rather
-  than just on/off — for example, they could make the text smaller or
-  move it to a different position on screen (`user.subtitles_size` and
-  `user.subtitles_y`).
-- If **adjust:** Ask what they want to change (size, position), then set
-  the relevant settings (`user.subtitles_size`, `user.subtitles_y`) in a
-  `.talon` file with a `settings():` block.
-- Confirm what was changed.
-
-#### System Paths
-
-**Ask:** "System paths let you give spoken names to folders on your
-computer, so path-aware commands can use them. What folders would you want
-to refer to by voice? Give me a short name and the full path for each."
-
-**After the user responds:**
-- Append each entry as `spoken name: /full/path` to
-  `<user_repo>/settings/system_paths-<hostname>.talon-list`
-- If the file doesn't exist, create it with header
-  `list: user.system_paths` followed by a `-` separator line, then the
-  entries
-- Confirm: "Added [paths]."
+- **Pre-flight the menu.** Before showing the AskUserQuestion menu above,
+  re-read the Setup Progress table. If any personalization rows are
+  already `done` from an earlier attempt, surface that and only offer
+  the remaining options.
+- **Give a beginner-friendly example before delegating.** This is most
+  users' first time and they often don't know what to add. Before
+  running customize-settings for a given option, offer an example so
+  the user has something concrete to react to. Examples to use:
+  - **Vocabulary:** "Things like software names, project names, or
+    technical terms — anything Talon doesn't know yet. If Talon keeps
+    stumbling on a word like `SuperWhisper`, that's a good one to add."
+  - **Words to replace:** "Words Talon hears correctly but spells the
+    wrong way. For example, if someone's name is spelled `Ryon` but
+    Talon always writes `Ryan`, you'd add that here."
+  - **Websites:** "Sites you'd want to open by voice — say `open
+    gmail` to go straight there. Just give a short name; I'll look up
+    the URL."
+  - **Search engines:** "Searches you use a lot — say `pubmed hunt
+    reversal learning` and it opens the results. Community already
+    has google, amazon, scholar, wiki, and map."
+  - **Subtitles:** "Talon's built-in subtitles are on/off from the
+    menu bar; the community plugin is more customizable (font size,
+    on-screen position). Do you want subtitles off, or adjusted?"
+  - **System paths:** "Spoken names for folders on your computer —
+    short name plus the full path. Useful for path-aware commands."
+- **Hand off the user's answer to customize-settings.** Once you have
+  the entries the user wants to add, run the customize-settings flow
+  for that setting with the entries already collected — don't make
+  customize-settings re-ask.
+- **Handle "skip" without delegating.** If the user says "skip" /
+  "nothing right now" / "I don't have any" for an option, mark the
+  matching row `skipped` in the progress table and move on without
+  invoking customize-settings for that option.
+- **The agent writes files directly.** Never ask the user to open a
+  text editor. (customize-settings already enforces this — repeated
+  here for clarity.)
 
 ### After Each Option
 
