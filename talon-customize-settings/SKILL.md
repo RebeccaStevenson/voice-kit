@@ -318,3 +318,23 @@ they can use next time to make similar changes themselves:
 | Replace a problem command | Edit the override `.talon` file directly |
 
 Also mention `help customize` to see all customizable files.
+
+## When You're Stuck
+
+If a setting isn't taking effect, or the file format isn't behaving the
+way the user expects, don't guess:
+
+1. **Check the log.** `tail -n 100 ~/.talon/talon.log` will usually show
+   `WARNING` lines for malformed CSVs or `.talon-list` files (wrong
+   header, missing trailing newline, duplicate keys).
+2. **Compare against a community example.** Most settings have a
+   reference implementation under
+   `~/.talon/user/community/core/` or `.../settings/`. `grep -rn` for
+   the setting name and copy the format exactly.
+3. **WebFetch the wiki**:
+   [Basic Customization](https://talon.wiki/Customization/basic_customization),
+   [Improving Recognition Accuracy](https://talon.wiki/Resource%20Hub/Speech%20Recognition/improving_recognition_accuracy).
+   Prefer fetching the wiki over paraphrasing from memory.
+4. **If the wiki doesn't cover it**, tell the user and point them at the
+   **Talon Slack `#help` channel** (<https://talonvoice.com/chat>).
+   Don't fabricate an answer.

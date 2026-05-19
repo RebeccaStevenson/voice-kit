@@ -274,7 +274,14 @@ The official docs recommend **using `vocabulary` minimally and preferring `repla
 
 ## Talon Integration
 
-The user has SuperWhisper integrated with Talon voice commands at `~/.talon/user/talon_rebecca/superwhisper/`. Mode-switching scripts and hotkey configurations live there. If creating a new mode that should be accessible via Talon, note this but don't modify Talon files unless asked — use the `talon` skill for that.
+If the user also has Talon set up, SuperWhisper modes can be switched and
+recorded by voice. The Talon-side commands live in the user's personal
+Talon repo — find it by listing `~/.talon/user/` and picking the folder
+that is NOT `community`, `rango-talon`, `cursorless-talon`, `parrot`, or
+any other well-known shared repo. Mode-switching scripts and hotkey
+configurations belong in `<user_repo>/superwhisper/`. Don't modify Talon
+files unless asked — defer to the **talon-create-command** skill for
+that.
 
 Two deep links are useful from Talon:
 

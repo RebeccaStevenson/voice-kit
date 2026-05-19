@@ -2,16 +2,24 @@
 name: talon-setup-talon
 description: >
   Step-by-step Talon installation, setup, and personalization for complete
-  beginners on macOS. Use when the user asks to "install Talon", "set up
-  Talon", "get started with voice control", "install community commands",
-  "personalize settings", "customize Talon", "resume setup", "continue
-  setup", "set up Rango", "install rango", or wants help with initial
-  Talon configuration.
+  beginners. Best supported on macOS; Linux and Windows are supported via
+  brief install branches that route to the Talon Community Wiki for the
+  platform-specific details. Use when the user asks to "install Talon",
+  "set up Talon", "get started with voice control", "install community
+  commands", "personalize settings", "customize Talon", "resume setup",
+  "continue setup", "set up Rango", "install rango", or wants help with
+  initial Talon configuration.
 ---
 
 # Setting Up Talon Voice Control
 
-Walk the user through every step of installing and configuring Talon from scratch on macOS. Assume zero prior experience with voice control software. Keep language friendly, jargon-free, and encouraging.
+Walk the user through every step of installing and configuring Talon from scratch. Assume zero prior experience with voice control software. Keep language friendly, jargon-free, and encouraging.
+
+**Platform support.** Talon runs on macOS, Linux, and Windows. This skill
+walks macOS users through every step in detail. For Linux and Windows
+users the install path differs significantly — those branches give the
+essentials and route to the wiki for full instructions, then rejoin the
+common steps (community clone, personalization).
 
 > This guide draws from the [Talon Community Wiki](https://talon.wiki/),
 > a community-maintained resource for learning and troubleshooting Talon.
@@ -113,15 +121,69 @@ changing the relevant row in the `## Setup Progress` table:
 
 See also: [Talon Installation Guide](https://talon.wiki/Resource%20Hub/Talon%20Installation/installation_guide)
 
+Explain to the user: Talon is a voice control framework — it listens to
+speech and converts it into computer actions.
+
+Before installing, **read the OS** from
+`~/.talon/talon-assistant/profile.md` (set during talon-start). Then
+follow the matching branch below.
+
+### Branch A: macOS (detailed walkthrough)
+
 1. Confirm the user is on **macOS High Sierra (10.13) or later** — Talon requires this as a minimum. Apple Silicon Macs are natively supported.
 2. Direct the user to download Talon from https://talonvoice.com
-3. Explain that Talon is a voice control framework — it listens to speech and converts it into computer actions.
-4. Walk through the macOS installation:
+3. Walk through the macOS installation:
    - Open the downloaded `.dmg` file
    - Drag the Talon app to the Applications folder
    - Launch Talon from Applications
    - Grant macOS accessibility permissions when prompted (System Settings > Privacy & Security > Accessibility)
    - Grant microphone permission when prompted
+
+The macOS-specific "first launch troubleshooting", menu bar icon
+explanation, and speech-engine sections below all apply to this branch.
+
+### Branch B: Linux
+
+The Linux install path differs by distro and isn't fully scripted in
+this skill. The wiki has the up-to-date instructions for each
+distribution:
+
+- **Wiki page:** [Talon Installation — Linux](https://talon.wiki/Resource%20Hub/Talon%20Installation/installation_guide) — WebFetch this and walk the user through the steps that match their distro.
+
+Key differences from macOS:
+
+- Talon ships as a `.tar.xz` archive (and sometimes `.deb` / `.AppImage`); extract it under `~/.talon-bin/` or similar and add `talon` to the user's PATH.
+- There is no Applications folder or Gatekeeper. Launch from a terminal (`talon &`) or from the user's DE app menu after installing the `.desktop` file the archive ships with.
+- The "menu bar icon" is a status-bar / system-tray icon, depending on the desktop environment (GNOME, KDE, etc.). On GNOME, the user may need the AppIndicator extension to see it.
+- Microphone and accessibility permissions are not gated like macOS — they're managed at the PulseAudio / PipeWire and X11 / Wayland layer. Default install usually works without extra setup.
+
+After Talon is running and the tray icon is visible, skip ahead to the
+**Speech Engine** subsection below — the menu interaction is the same.
+
+### Branch C: Windows
+
+- **Wiki page:** [Talon Installation — Windows](https://talon.wiki/Resource%20Hub/Talon%20Installation/installation_guide) — WebFetch this and walk the user through.
+
+Key differences from macOS:
+
+- Talon ships as a `.msi` installer; run it as the user's regular account (not Administrator).
+- The user's Talon directory is `%AppData%\Talon\` rather than `~/.talon/`. **All commands and file paths below that use `$HOME/.talon` or `~/.talon` need to be translated to the Windows equivalent.** When the agent is helping a Windows user, prefer PowerShell (`$env:APPDATA\Talon\...`) and remember Talon's REPL lives at `%AppData%\Talon\bin\repl.exe`.
+- After installing, Talon appears as a **system tray icon** (bottom-right, near the clock), not a menu bar icon.
+- Microphone permissions are handled in Windows Settings → Privacy & Security → Microphone — allow desktop apps.
+
+After Talon is running and the tray icon is visible, skip ahead to the
+**Speech Engine** subsection below — the menu interaction is the same
+once the icon is visible.
+
+### macOS-specific subsections (skip on Linux / Windows)
+
+The following three subsections — "What Talon Looks Like When Running",
+"Nothing happened — First Launch Troubleshooting", and the menu-bar
+phrasing in the **Speech Engine** section — are written for macOS users.
+On Linux or Windows, adapt the tray-icon and permission language to the
+user's platform (system tray on Windows, status-bar icon on Linux) and
+fall back to the wiki troubleshooting page if anything is unclear:
+[Talon Troubleshooting](https://talon.wiki/Resource%20Hub/Speech%20Recognition/troubleshooting).
 
 ### What Talon Looks Like When Running
 
@@ -199,13 +261,23 @@ If the user's Git experience is "None" (check the profile), explain what
 each command does before running it, but go ahead and execute it.
 
 ```bash
-# Clone the community commands into the Talon user directory
+# Clone the community commands into the Talon user directory (macOS / Linux)
 git clone https://github.com/talonhub/community "$HOME/.talon/user/community"
 ```
 
-If the user doesn't have `git` installed, help them install it:
-- Typing `git` in Terminal on macOS will prompt Xcode Command Line Tools installation
-- Alternatively: `xcode-select --install`
+**Windows users:** the equivalent target is `%AppData%\Talon\user\community`.
+In PowerShell:
+
+```powershell
+git clone https://github.com/talonhub/community "$env:APPDATA\Talon\user\community"
+```
+
+If the user doesn't have `git` installed, help them install it. Install
+instructions depend on OS:
+
+- **macOS:** typing `git` in Terminal prompts the Xcode Command Line Tools install. Alternatively run `xcode-select --install`.
+- **Linux:** use the system package manager — `sudo apt install git`, `sudo dnf install git`, or `sudo pacman -S git`.
+- **Windows:** download from <https://git-scm.com/download/win>.
 
 After cloning, Talon will automatically detect and load the new commands within a few seconds — no restart required.
 

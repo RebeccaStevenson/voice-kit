@@ -158,3 +158,21 @@ Share these with the user:
 ## Adding Commands Later
 
 After initial setup, point the user to the **talon-create-command** skill for guidance on writing new commands. The talon-test-and-debug skill covers how to verify commands work correctly.
+
+## When You're Stuck
+
+If Talon isn't loading the new repo, or `hello.talon` doesn't trigger
+after saving:
+
+1. **Check the log.** `tail -n 50 ~/.talon/talon.log` shows whether
+   Talon found the file (`[+]` line) or hit an error.
+2. **Confirm the path.** The repo must be at `~/.talon/user/<name>/`,
+   not nested deeper. `ls ~/.talon/user/<name>/` should show the
+   `hello.talon` file at top level.
+3. **WebFetch the wiki**:
+   [Basic Customization](https://talon.wiki/Customization/basic_customization)
+   covers how Talon auto-loads files from `user/`. Prefer fetching the
+   wiki over paraphrasing from memory.
+4. **If the wiki doesn't cover it**, tell the user and point them at the
+   **Talon Slack `#help` channel** (<https://talonvoice.com/chat>).
+   Don't fabricate an answer.

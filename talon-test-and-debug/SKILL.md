@@ -288,3 +288,21 @@ Repeat the commands summary so the user knows what's ready to use:
 ## Common Error Patterns
 
 See `references/common-errors.md` for a table of frequent errors and their fixes.
+
+## When You're Stuck
+
+If the checklist passes but the command still misbehaves — or an error
+message doesn't match anything in `common-errors.md` — don't guess at
+the cause:
+
+1. **Re-read the log with more lines.** `tail -n 500 ~/.talon/talon.log`
+   often surfaces a Python traceback further back than the last 100 lines.
+2. **Bisect.** Comment out half the command body, save, and re-test. The
+   half that still breaks contains the issue.
+3. **WebFetch the wiki troubleshooting page**
+   (<https://talon.wiki/Resource%20Hub/Speech%20Recognition/troubleshooting>)
+   and the [Talon Files](https://talon.wiki/Customization/talon-files)
+   reference. Prefer fetching the wiki over paraphrasing from memory.
+4. **If the wiki doesn't cover it**, tell the user and point them at the
+   **Talon Slack `#help` channel** (<https://talonvoice.com/chat>) with
+   a copy of the relevant log lines. Don't fabricate a diagnosis.

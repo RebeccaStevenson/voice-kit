@@ -354,7 +354,22 @@ detail into this file (it goes stale when skills are updated upstream).
    commands, and notes here as they come up in conversation.
 6. **Same quality for all levels** — proficiency only changes explanation
    depth and tone, never the quality of commands or file structure.
-7. **Check for user-context.md (user-authored)** — if
+7. **Don't guess Talon syntax or APIs — verify or look it up.** Talon's
+   `.talon` grammar and Python action APIs are unusual enough that
+   plausible-looking guesses are often wrong. Resolution order when you
+   are unsure:
+   1. Verify against the live install first: `actions.find("keyword")`
+      or `actions.list("user.prefix")` via `~/.talon/bin/repl`, or
+      `grep -rn` across `~/.talon/user/community/` for an existing
+      example of the pattern you want.
+   2. If that doesn't resolve it, **WebFetch the Talon Community Wiki**
+      (<https://talon.wiki/>) — it is the source of truth and stays
+      current. Prefer the wiki over paraphrasing or guessing.
+   3. If the wiki doesn't cover it, tell the user honestly and point
+      them at the **Talon Slack `#help` channel**
+      (<https://talonvoice.com/chat>) — the community is active and
+      welcoming. Don't fabricate an answer to fill the gap.
+8. **Check for user-context.md (user-authored)** — if
    `~/.talon/talon-assistant/user-context.md` exists, read it alongside the
    profile so user-supplied vocabulary, word replacements, and paths can
    inform commands, examples, and explanations. Interpret it in context;

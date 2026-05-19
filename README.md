@@ -26,7 +26,12 @@ The Talon skills distill the [Talon Community Wiki](https://talon.wiki/) into on
 
 Tested with [Claude Code](https://claude.com/claude-code) and the [Claude Agent SDK](https://docs.claude.com/en/api/agent-sdk/overview). Should work with any agent that loads project-local skills — if your agent reads from a different folder (e.g. `.agents/skills/`), swap the destination path below to match.
 
-Clone this repo and copy the skill folders into `.claude/skills`:
+Clone this repo and copy the skill folders into `.claude/skills`. The
+command below creates `.claude/skills/` in **whatever directory you run it
+from** — pick deliberately:
+
+- For the skills to be available in **every** Claude Code session, run from your home directory (`cd ~` first).
+- For a **single project**, run from that project's root.
 
 ```bash
 mkdir -p .claude/skills && \

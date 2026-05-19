@@ -435,3 +435,21 @@ Otherwise (`.talon`-only path), format your response as:
 
 - `path/to/file.talon` (created / edited)
 - `path/to/file.py` (created / edited)
+
+## When You're Stuck
+
+Talon's `.talon` grammar and Python API surface are large and easy to
+mis-remember. Don't guess — resolution order:
+
+1. **Verify against the live install.** Use the REPL:
+   `echo 'actions.find("keyword")' | ~/.talon/bin/repl` confirms an
+   action exists and shows its source. `grep -rn "pattern"
+   ~/.talon/user/community/` finds working examples of similar commands.
+2. **Check the local references** in this skill: `references/syntax-guide.md`
+   for `.talon` syntax, `references/python-api-reference.md` for Python.
+3. **WebFetch the Talon Community Wiki** (<https://talon.wiki/>) — the
+   pages cited at the top of this skill are the canonical source. Prefer
+   fetching the wiki over paraphrasing from memory.
+4. **If the wiki doesn't cover it**, tell the user and point them at the
+   **Talon Slack `#help` channel** (<https://talonvoice.com/chat>).
+   Don't fabricate an answer.
