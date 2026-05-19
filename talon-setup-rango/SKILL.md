@@ -98,6 +98,14 @@ If hints appear and clicking works, Rango is set up correctly. If not, check:
 - The `rango-talon` folder is inside `~/.talon/user/`.
 - The Talon log (`Scripting → View Log`) shows no errors related to rango.
 
+### 1d. Update the Setup Progress table
+
+Once Rango is verified, update the `## Setup Progress` table in
+`~/.talon/talon-assistant/profile.md`: change the **Rango** row from
+`—` to `done` and add today's date. Use the Edit tool to update just
+that row — do not rewrite the whole file. If the user opts to skip
+Rango partway through, mark it `skipped` with the date instead.
+
 ## Section 2 — Your First 15 Minutes
 
 Once installation is verified, walk the user through everyday commands so they can start browsing immediately. Present these as a natural flow, not a reference list.

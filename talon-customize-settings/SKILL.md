@@ -302,6 +302,32 @@ the same caveat about context specificity.
 
 ## After Making Changes
 
+### Update the Setup Progress table (only if the row was empty)
+
+If the relevant `## Setup Progress` row in
+`~/.talon/talon-assistant/profile.md` is still `—`, change it to `done`
+with today's date — the user has now configured that setting for the
+first time. The relevant rows:
+
+| Setting touched | Row to update |
+|---|---|
+| Vocabulary | Personalize: vocabulary |
+| Words to replace | Personalize: words to replace |
+| Websites | Personalize: websites |
+| Search engines | Personalize: search engines |
+| Subtitles | Personalize: subtitles |
+| System paths | Personalize: system paths |
+
+If the row already says `done`, leave it alone — this table tracks
+"have you set this up at all", not "when did you last edit it." Speech
+timeout, alphabet/modifier alternates, and problem-command remapping
+don't have onboarding rows; skip the table update for those.
+
+Use the Edit tool to update just the relevant row — do not rewrite the
+whole file.
+
+### Remind the user of the voice shortcut
+
 After completing a change, briefly remind the user of the voice command
 they can use next time to make similar changes themselves:
 

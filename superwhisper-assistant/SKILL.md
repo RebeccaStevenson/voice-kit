@@ -1,11 +1,38 @@
 ---
 name: superwhisper-assistant
-description: Install, configure, and create custom dictation modes for SuperWhisper, the macOS voice-to-text app. Handles mode JSON files, voice/language model selection, prompt engineering for text formatting, and Talon integration. Use when the user mentions SuperWhisper, wants to create or edit dictation modes, write mode prompts, configure voice models, or says "dictation mode", "whisper mode", or "voice typing mode".
+description: Install, configure, and create custom dictation modes for SuperWhisper, the macOS voice-to-text app. Handles mode JSON files, voice/language model selection, prompt engineering for text formatting, and Talon integration. Use when the user mentions SuperWhisper, wants to create or edit dictation modes, write mode prompts, configure voice models, or says "dictation mode", "whisper mode", "voice typing mode", "dictate emails / messages / notes", "speech to text", "voice to text", "transcribe my voice", or describes wanting to speak text into apps rather than type. Note: for hands-free computer *control* (clicking, navigating, running shortcuts) the user wants Talon — route to talon-start instead.
 ---
 
 # SuperWhisper Skill
 
 SuperWhisper is a voice-to-text app (macOS, Windows, iOS) that converts speech into formatted text. It supports custom "modes" — JSON config files that control how dictation output gets processed by a language model. This skill covers installation and creating/editing those mode files.
+
+## Before Starting — Load the Profile
+
+If the user has also been through `talon-start`, a profile lives at
+`~/.talon/talon-assistant/profile.md`. Read it and adapt this skill's
+explanations the same way the Talon skills do:
+
+```bash
+cat ~/.talon/talon-assistant/profile.md 2>/dev/null
+```
+
+| Level | How to adapt |
+|------|-------------|
+| **Coding none / basic** | Avoid jargon like "JSON serialization", "byte-format", "round-trip". Phrase the byte-copy rule as "copy the existing mode file with `cp`, then edit individual fields — don't recreate the file from scratch." Skip the bisection playbook unless something breaks. |
+| **Coding comfortable+** | Use the technical framing as written. |
+| **Learning: just-make-it-work** | Skip the "why" behind the byte-format rule and the version-history sidebars. Run the donor check, do the byte-copy, do the field edits, verify. Done. |
+| **Learning: brief-context** | One-sentence "this matters because SuperWhisper's parser is picky about JSON formatting." Move on. |
+| **Learning: teach-me / deep-dive** | Explain the donor pattern, the byte-format finding, and the verification checks as they come up. |
+
+If no profile exists, default to brief-context tone and offer (once) to
+run `talon-start` so future sessions adapt automatically. Then proceed
+regardless — a profile is helpful but not required for this skill.
+
+User-supplied context may also be present at
+`~/.talon/talon-assistant/user-context.md`. If so, scan it for relevant
+vocabulary / project names so mode prompts and examples can echo the
+user's domain rather than generic placeholders.
 
 ## Installation
 
@@ -21,7 +48,7 @@ SuperWhisper can be installed two ways:
    open "https://superwhisper.com"
    ```
 
-After installation, SuperWhisper lives in the menu bar. The user activates dictation with a keyboard shortcut (default: Option+Space, but often customized). As of v2.12.0 (Apr 2026) shortcuts can also be set per-mode (push-to-talk and toggle-recording), so a single global hotkey is no longer the only option.
+After installation, SuperWhisper lives in the menu bar. The user activates dictation with a keyboard shortcut (default: Option+Space, but often customized). Recent SuperWhisper releases also support per-mode push-to-talk and toggle-recording shortcuts, so a single global hotkey is no longer the only option — see `references/version-notes.md` for which version added which feature.
 
 **System notes**: Offline/local models require Apple Silicon. Intel Macs should use cloud models. SuperWhisper is a paid app ($8.49/month Pro) with a free tier limited to smaller models and 15 minutes of recording.
 
@@ -34,8 +61,9 @@ All user configuration lives under `~/Documents/superwhisper/`:
 ├── modes/          # Custom mode JSON files (one per mode)
 ├── settings/       # settings.json (global config)
 ├── recordings/     # Per-recording folders containing .wav audio,
-│                   # raw transcripts, and AI-output JSON (since 2026,
-│                   # all of this is filesystem-visible and scriptable)
+│                   # raw transcripts, and AI-output JSON — all
+│                   # plain files in recent versions (see
+│                   # references/version-notes.md)
 └── models/         # Downloaded model files
 ```
 
@@ -86,7 +114,7 @@ If the output lists at least one mode, pick one as the donor for Step 1 (any of 
 - forward slashes escaped as `\/` inside strings (e.g., `Quarto\/Markdown`)
 - a trailing newline at end of file
 
-Python's default `json.dump` produces `"key": "value"` (no space), `[]` (compact), unescaped `/`. SW *sometimes* accepts that format, but rejects it unpredictably (probably depending on whether SW has previously parsed and rewritten the file in its own style). Trying to clone via `json.load(donor) → modify → json.dump(new)` is a known failure mode — confirmed twice on 2026-04-29 and 2026-04-30.
+Python's default `json.dump` produces `"key": "value"` (no space), `[]` (compact), unescaped `/`. SW *sometimes* accepts that format, but rejects it unpredictably (probably depending on whether SW has previously parsed and rewritten the file in its own style). Trying to clone via `json.load(donor) → modify → json.dump(new)` is a known failure mode — see `references/version-notes.md` for dates and verification status.
 
 The reliable workflow is **byte-copy + surgical Edit**:
 
@@ -117,7 +145,7 @@ The most important fields to customize for each mode:
 - **`voiceModelID`**: Which speech-to-text model transcribes the audio.
 - **`type`**: Set to `"custom"` for user-created modes. Built-in types include `"super"`, `"note"`, `"email"`, `"meeting"`.
 
-Recent SuperWhisper versions also added per-mode override fields for auto-paste (v2.9.0), autocapitalize (v2.11.0), and per-mode push-to-talk / toggle-recording shortcuts (v2.12.0). The exact JSON keys aren't in the public docs — read an existing mode in `~/Documents/superwhisper/modes/` to see what's set, or set the override in the UI and diff the file before/after.
+Recent SuperWhisper versions also added per-mode override fields for auto-paste, autocapitalize, and per-mode push-to-talk / toggle-recording shortcuts. The exact JSON keys aren't in the public docs — read an existing mode in `~/Documents/superwhisper/modes/` to see what's set, or set the override in the UI and diff the file before/after. See `references/version-notes.md` for which version introduced which override.
 
 ### Step 2: Register the mode in settings.json
 
@@ -292,7 +320,7 @@ These can be chained (open the mode URL, then the record URL) to switch and star
 
 ## Agent Integration (Claude Code, Open Code)
 
-As of v2.13.0 (Apr 2026), SuperWhisper integrates directly with Claude Code and Open Code agents. v2.13.2 added support for the Claude `AskUserQuestion` hook, so an agent can prompt the user and receive a dictated answer. If the user asks about wiring SuperWhisper into a Claude Code workflow, point at this integration before reaching for custom scripts.
+Recent SuperWhisper releases integrate directly with Claude Code and Open Code agents, including support for the Claude `AskUserQuestion` hook so an agent can prompt the user and receive a dictated answer. See `references/version-notes.md` for the version that introduced each piece. If the user asks about wiring SuperWhisper into a Claude Code workflow, point at this integration before reaching for custom scripts.
 
 ## Troubleshooting Pointers
 

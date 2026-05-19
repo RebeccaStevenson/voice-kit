@@ -132,6 +132,18 @@ testpaths = ["tests"]
 cd "$HOME/.talon/user/REPO_NAME" && git add . && git commit -m "initial setup: directory structure and starter command"
 ```
 
+### Update the Setup Progress table
+
+Once the repo is created and the initial commit lands, update the
+`## Setup Progress` table in `~/.talon/talon-assistant/profile.md`:
+change the **Personal repo** row from `—` to `done` and add today's
+date. Use the Edit tool to update just that row — do not rewrite the
+whole file.
+
+If the user skipped this skill (e.g., they're keeping all customisation
+in the community repo despite the warning), mark the row `skipped` with
+the date instead.
+
 ## Step 5: Optional — Back Up to GitHub
 
 This step is **entirely optional** — Git works locally without a GitHub account.

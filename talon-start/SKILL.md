@@ -1,11 +1,19 @@
 ---
 name: talon-start
 description: >
-  Initialize the Talon voice assistant and create a user profile. This should
-  be the FIRST skill new users run — before talon-setup-talon or any other skill.
-  Use when the user says "set up the assistant", "start", "initialize",
-  "create my profile", "get started", or is using the Talon voice assistant
-  plugin for the first time.
+  Initialize the Talon voice assistant and create a user profile. This is
+  the entry point for first-time users — it should run BEFORE
+  talon-setup-talon or any other skill. Use when the user says "set up
+  the assistant", "start", "initialize", "create my profile", "get
+  started", or "update my profile" — and also when they describe the
+  underlying goal in natural language without naming Talon, e.g.:
+  "I want to control my computer with my voice", "I want to use my
+  voice to use my computer", "set me up for hands-free computing",
+  "I have RSI and need a hands-free setup", "I want to talk to my
+  computer", "help me get started with voice control", or "introduce
+  me to Talon / voice control". From this skill the agent walks the
+  user through creating a profile and then routes to the right
+  next-step skill (typically talon-setup-talon).
 ---
 
 # Start — Talon Voice Assistant Setup
